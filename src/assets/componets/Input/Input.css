@@ -1,0 +1,36 @@
+.INPUT_DIV{
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-sm)/2);
+  margin-top: calc(var(--space-md)/2);
+}
+
+.INPUT_LABEL{
+  font-size: var(--font-sm);
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.INPUT{
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--primary-muted);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  color-scheme: dark;
+}
+
+.INPUT:focus {
+  border-color: var(--primary-main);
+  box-shadow: 0 0 0 2px rgba(92, 131, 116, 0.2);
+}
+
+.INPUT::placeholder {
+  color: var(--text-dim);
+  opacity: 0.5;
+}

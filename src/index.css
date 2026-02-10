@@ -1,68 +1,52 @@
+/* -------------------------------------------------------------------------- */
+/*                              High Level Items                              */
+/* -------------------------------------------------------------------------- */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* --- BASE CANVAS --- */
+  --bg-dark: #040D12;      /* Use for: Entire page background (body). */
+  --bg-surface: #112121;   /* Use for: Cards, Modals, and Input field backgrounds. */
+  
+  /* --- BRANDING & ACTIONS --- */
+  --primary-main: #5C8374; /* Use for: Primary buttons, Active navigation links. */
+  --primary-muted: #93B1A6;/* Use for: Borders, Dividers, and Icons that aren't active. */
+  --primary-glow: #00FFAB; /* Use for: Success messages, Map markers, and Hover states. */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* --- TYPOGRAPHY --- */
+  --text-main: #FFFFFF;    /* Use for: Primary headings and button text. */
+  --text-dim: #94A3B8;     /* Use for: Helper text, Placeholder text, and Footers. */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* --- FUNCTIONAL STATES --- */
+  --error-red: #FF5F5F;    /* Use for: Failed login alerts and API error messages. */
+  --warning-gold: #FFD700; /* Use for: Approaching Mapbox API limits (Daily Limit). */
+
+  /* --- Spacing System --- */
+  --space-sm: 0.5rem;
+  --space-md: 1.5rem;    /* Specified Requirement */
+  --space-lg: 2.5rem;
+
+  /* --- Typography Hierarchy --- */
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.25rem;
+  --font-xl: 2rem;
+
+  /* --- Layout Tokens --- */
+  --radius-sm:4px;
+  --radius-md:8px;
+  --radius-lg: 12px;     /* Specified Requirement */
+  --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+body{
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
 }
 
-body {
+/* Apply to everything to prevent sizing issues */
+* {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  padding: 0;
+  box-sizing: border-box;
 }

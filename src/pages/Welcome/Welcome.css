@@ -1,0 +1,31 @@
+.WELCOME_WRAPPER{
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.gradient_left{
+    flex: 1;
+    background: linear-gradient(
+        90deg, 
+        var(--bg-surface) 0%,      /* Anchor: Pure dark on the far left */
+        var(--bg-surface) 50%,     /* Depth: Keep it dark for a while */
+        var(--bg-dark) 100%  /* Fade: Transition into the surface color on the right */
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.gradient_right{
+    flex: .3;
+    background-color: var(--bg-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+}
+
