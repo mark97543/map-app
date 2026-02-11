@@ -12,8 +12,7 @@ TODO: Need to Make sign in Screen
 #                                  Components                                  #
 # ---------------------------------------------------------------------------- #
 
-TODO: Need to make Input
-  - Need new date/time picker 
+
 TODO: Need to make a special Text Area
 TODO: Custom Date and time picker 
 
