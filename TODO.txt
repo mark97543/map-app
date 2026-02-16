@@ -17,3 +17,19 @@ TODO: Custom Date and time picker
 # ---------------------------------------------------------------------------- #
 #                                   Security                                   #
 # ---------------------------------------------------------------------------- #
+
+
+# ---------------------------------------------------------------------------- #
+#                                   Dashboard                                  #
+# ---------------------------------------------------------------------------- #
+- TODO: GEOCODING and Searching
+- TODO: Directions between two points
+- TODO: save to directus
+- TODO: Checkpoints
+
+# ---------------------------------------------------------------------------- #
+#                                    Sidbar                                    #
+# ---------------------------------------------------------------------------- #
+-TODO: Make Collapse Button Transform
+- TODO: Add logic the the button to rotat 180 degres on Collapse
+-TODO: Collapze bar vertically and horizonatlly slowly and smoothly 

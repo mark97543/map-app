@@ -1,68 +1,54 @@
+import { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css';
+import './Dashboard.css'
 
-import Button from "../../assets/componets/Button/Button"
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from "../../context/AuthContext";
+import Sidebar from './Sidebar/Sidebar';
 
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 function Dashboard(){
+  // mapContainerRef: Points to the physical <div> in the DOM where the map will live
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
-  const navigate = useNavigate();
-  const {user,logout}=useAuth();
+  // mapRef: Stores the actual Mapbox instance so we can move it or add markers later
+  const mapRef = useRef<mapboxgl.Map | null>(null)
 
-  const handleLogout = async () => {
-    try {
-      // This tells the Directus API to invalidate the Refresh Token
-      await logout();
-    } catch (error) {
-      console.error("Logout error (likely already expired):", error);
-    } finally {
-      // Always redirect the user even if the server-side logout fails
-      navigate('/');
+  useEffect(()=>{
+    //Guard Clause: Prevents React from creating the map twice (common in Strict Mode)
+    if(mapRef.current) return;
+
+    //initialize the map
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current!, //Tell Mapbox which div to use
+      style: 'mapbox://styles/mapbox/navigation-night-v1', // The premium dark road theme
+      center: [-98.5795, 39.8283], // Starting coordinates [Longitude, Latitude]
+      zoom: 3, // Initial zoom level (higher is closer)
+    })
+
+    //Cleanup Function
+    //This rund when the user logs out or leaves dashboard
+    //It kills the map instance to prevent memory leaks 
+    return ()=>{
+      if(mapRef.current){
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     }
-  };
+  },[]) //Empty to run only on mount this will prevent looping through api calls. 
 
   return (
-    <div style={{ 
-      backgroundColor: 'var(--bg-dark)', 
-      minHeight: '100vh', 
-      padding: 'var(--space-md)', 
-      color: 'white' 
-    }}>
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        borderBottom: '1px solid var(--primary)' 
-      }}>
-        <h1 style={{ fontSize: 'var(--text-xl)' }}>Dashboard</h1>
-        
-        <div style={{ textAlign: 'right' }}>
-          <p style={{ margin: 0, fontSize: 'var(--text-md)', color: 'var(--primary)' }}>
-            {user?.email}
-          </p>
-          <Button 
-            addClass="logout_button" 
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </div>
-      </header>
+    <div className='DASH_WRAPPER'>
+      {/* Floating UI Layer: Header and other buttons go here.z-index: 10 ensures they stay "above" the map.*/}
+      <div className='DASH_ui'>
+        <Sidebar mapRef={mapRef}/>
+      </div>
 
-      <main style={{ marginTop: 'var(--space-md)' }}>
-        {/* Phase 12 Map Integration goes here */}
-        <div style={{ 
-          height: '400px', 
-          background: '#0a1a21', 
-          borderRadius: 'var(--radius-lg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px dashed var(--primary)'
-        }}>
-          <p>Mapbox Container Placeholder (Phase 12)</p>
-        </div>
-      </main>
+      {/* The Map Layer: This div is invisible until Mapbox injects the map into it.*/}
+      <div className='DASH_map' ref={mapContainerRef}>
+
+      </div>
+
     </div>
   );
 }

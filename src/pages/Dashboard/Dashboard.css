@@ -1,0 +1,22 @@
+.DASH_WRAPPER{
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.DASH_ui{
+  position: absolute;
+  top:0;
+  left: 0;
+  width:100%;
+  z-index: 10;
+}
+
+.DASH_map{
+  position: absolute;
+  top:0;
+  left: 0;
+  width:100%;
+  height: 100%;
+}

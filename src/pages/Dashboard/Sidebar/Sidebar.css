@@ -1,0 +1,111 @@
+.DASH_SIDE_wrapper{
+  background-color: var(--bg-surface);
+  position: absolute;
+  top:var(--space-md);
+  left: var(--space-sm);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  color: var(--text-main);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+  overflow: hidden;
+  height: calc(100vh - calc(2 * var(--space-md)));
+}
+
+.DASH_SIDE_wrapper.open{
+  width: 300px;
+}
+
+.DASH_SIDE_wrapper.closed{
+  width: 60px;
+}
+
+.DASH_SIDE_collapse{
+  font-size: calc(var(--font-xl) * 1.5);
+  color: var(--text-main);
+  border: none;
+  background: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  padding: 0;           
+  line-height: 1;
+}
+
+.DASH_SIDE_collapse:hover{
+  cursor: pointer;
+}
+
+.DASH_SIDE_Row1{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-sm);
+  justify-content: space-between;
+  width: 100%;
+}
+
+.DASH_SIDE_Row1 h1{
+  line-height: 1;
+  font-size: var(--font-xl);
+  margin: 0;
+  white-space: nowrap;
+  
+}
+
+.arrow-icon {
+  display: inline-block; /* Essential: rotation doesn't work on 'inline' elements */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth "pop" animation */
+  line-height: 1;
+}
+
+.arrow-icon.open {
+  transform: rotate(0deg);
+}
+
+.arrow-icon.closed {
+  /* This rotates it to point right when the sidebar is closed */
+  transform: rotate(180deg);
+}
+
+.DASH_SIDE_SearchArea{
+  margin-top: var(--space-md);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Sidebar.css */
+.DASH_SIDE_wrapper {
+  display: flex;
+  flex-direction: column; /* Allows the footer to stick to bottom */
+  justify-content: flex-start;
+  /* ... your existing styles ... */
+}
+
+.coord-tip {
+  font-size: 10px;
+  margin-top: 8px;
+  color: var(--text-main);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.DASH_SIDE_Footer {
+  margin-top: auto; /* Pushes to bottom */
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.DASH_SIDE_Footer p {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.DASH_SIDE_Footer code {
+  display: block;
+  margin-top: 5px;
+  font-family: monospace;
+  color: #93B1A6; /* Subtle brand green */
+}
