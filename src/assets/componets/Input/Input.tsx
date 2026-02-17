@@ -1,5 +1,6 @@
 import './Input.css'
-import { type ChangeEvent } from 'react';
+import { type ChangeEvent, type KeyboardEvent } from 'react';
+
 
 interface Inp{
   /**
@@ -22,6 +23,10 @@ interface Inp{
    * On Change event for value
    */
   change:(e: ChangeEvent<HTMLInputElement>)=>void;
+  /**
+   * Key Down Event
+   */
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 
@@ -29,7 +34,7 @@ interface Inp{
  * Standard Input
  * @param label
  */
-function Input({labelText, placeholder, type='text', value, change}:Inp){
+function Input({labelText, placeholder, type='text', value, change, onKeyDown}:Inp){
 
   return(
     <div className={`INPUT_DIV`}>
@@ -40,6 +45,7 @@ function Input({labelText, placeholder, type='text', value, change}:Inp){
         type={type}
         value={value}
         onChange={change}
+        onKeyDown={onKeyDown}
       />
     </div>
   )

@@ -30,6 +30,5 @@ TODO: Custom Date and time picker
 # ---------------------------------------------------------------------------- #
 #                                    Sidbar                                    #
 # ---------------------------------------------------------------------------- #
--TODO: Make Collapse Button Transform
-- TODO: Add logic the the button to rotat 180 degres on Collapse
--TODO: Collapze bar vertically and horizonatlly slowly and smoothly 
+-TODO: Add a copy button for clipbaord on coordinates
+-TODO: When click on waypoint need map to fly to thos point

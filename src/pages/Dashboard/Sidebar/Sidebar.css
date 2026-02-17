@@ -1,83 +1,69 @@
-.DASH_SIDE_wrapper{
+/* --- 1. Main Sidebar Container --- */
+.DASH_SIDE_wrapper {
   background-color: var(--bg-surface);
   position: absolute;
-  top:var(--space-md);
+  top: var(--space-md);
   left: var(--space-sm);
+  height: calc(100vh - calc(2 * var(--space-md)));
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   color: var(--text-main);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-  overflow: hidden;
-  height: calc(100vh - calc(2 * var(--space-md)));
-}
-
-.DASH_SIDE_wrapper.open{
-  width: 300px;
-}
-
-.DASH_SIDE_wrapper.closed{
-  width: 60px;
-}
-
-.DASH_SIDE_collapse{
-  font-size: calc(var(--font-xl) * 1.5);
-  color: var(--text-main);
-  border: none;
-  background: none;
-  font-weight: 600;
+  
+  /* Layout */
   display: flex;
-  align-items: center;
-  padding: 0;           
-  line-height: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  z-index: 20;
+
+  /* Animation */
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.DASH_SIDE_collapse:hover{
-  cursor: pointer;
-}
+.DASH_SIDE_wrapper.open { width: 300px; }
+.DASH_SIDE_wrapper.closed { width: 60px; }
 
-.DASH_SIDE_Row1{
+/* --- 2. Header & Toggle --- */
+.DASH_SIDE_Row1 {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: var(--space-sm);
   justify-content: space-between;
   width: 100%;
+  padding: var(--space-sm);
 }
 
-.DASH_SIDE_Row1 h1{
-  line-height: 1;
+.DASH_SIDE_Row1 h1 {
   font-size: var(--font-xl);
   margin: 0;
+  line-height: 1;
   white-space: nowrap;
-  
+}
+
+.DASH_SIDE_collapse {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .arrow-icon {
-  display: inline-block; /* Essential: rotation doesn't work on 'inline' elements */
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth "pop" animation */
+  font-size: calc(var(--font-xl) * 1.5);
+  color: var(--text-main);
+  font-weight: 600;
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   line-height: 1;
 }
 
-.arrow-icon.open {
-  transform: rotate(0deg);
-}
+.arrow-icon.closed { transform: rotate(180deg); }
 
-.arrow-icon.closed {
-  /* This rotates it to point right when the sidebar is closed */
-  transform: rotate(180deg);
-}
-
-.DASH_SIDE_SearchArea{
+/* --- 3. Search Section --- */
+.DASH_SIDE_SearchArea {
   margin-top: var(--space-md);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-/* Sidebar.css */
-.DASH_SIDE_wrapper {
-  display: flex;
-  flex-direction: column; /* Allows the footer to stick to bottom */
-  justify-content: flex-start;
-  /* ... your existing styles ... */
+  transition: opacity 0.5s ease;
 }
 
 .coord-tip {
@@ -86,26 +72,123 @@
   color: var(--text-main);
   opacity: 0.5;
   font-style: italic;
+  padding-left: 5px;
 }
 
+/* --- 4. Waypoint List (Draggable) --- */
+.DASH_SIDE_WaypointSection {
+  margin-top: 20px;
+  flex-grow: 1; /* Fills available space to push footer down */
+  overflow-y: auto;
+  padding-right: 5px; /* Space for scrollbar */
+}
+
+.DASH_SIDE_WaypointSection h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.waypoint-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.waypoint-item {
+  background: var(--bg-surface-light, #2C3E3B);
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  
+  /* Layout */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.waypoint-item:hover { background-color: #344945; }
+
+/* Dragging States */
+.waypoint-item.dragging {
+  background-color: #5C8374;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  cursor: grabbing;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  opacity: 0.4;
+  cursor: grab;
+  font-size: 18px;
+}
+
+.drag-handle:active { cursor: grabbing; }
+
+.waypoint-info { flex-grow: 1; }
+.waypoint-info strong { display: block; font-size: 13px; }
+.waypoint-info code { font-size: 10px; opacity: 0.6; color: #93B1A6; }
+
+/* --- 5. Remove Button --- */
+.waypoint-remove {
+  background: none;
+  border: none;
+  color: #ff5f5f;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: auto;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.waypoint-item:hover .waypoint-remove { opacity: 0.6; }
+.waypoint-remove:hover {
+  opacity: 1 !important;
+  transform: scale(1.2);
+}
+
+/* --- 6. Footer (Coordinate Display) --- */
 .DASH_SIDE_Footer {
-  margin-top: auto; /* Pushes to bottom */
+  margin-top: auto;
   padding: 15px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.DASH_SIDE_Footer p {
+.footer-label {
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  opacity: 0.6;
 }
 
-.DASH_SIDE_Footer code {
+.coord-display code {
   display: block;
   margin-top: 5px;
-  font-family: monospace;
-  color: #93B1A6; /* Subtle brand green */
+  font-family: 'Courier New', monospace;
+  color: #93B1A6;
+  font-size: 12px;
+}
+
+.waypoint-rename-input {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--text-main);
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    width: 100%;
+    outline: none;
+    border-radius: 4px;
+    padding: 2px 4px;
 }

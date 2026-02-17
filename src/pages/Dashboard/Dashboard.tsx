@@ -1,56 +1,98 @@
-import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl'
+import { useEffect, useRef, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './Dashboard.css'
-
-import Sidebar from './Sidebar/Sidebar';
+import './Dashboard.css';
+import Sidebar, { type Waypoint } from './Sidebar/Sidebar';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-function Dashboard(){
-  // mapContainerRef: Points to the physical <div> in the DOM where the map will live
+function Dashboard() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  
+  const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
+  const [menuPos, setMenuPos] = useState<{ x: number, y: number, lng: number, lat: number } | null>(null);
 
-  // mapRef: Stores the actual Mapbox instance so we can move it or add markers later
-  const mapRef = useRef<mapboxgl.Map | null>(null)
+  useEffect(() => {
+    if (mapRef.current || !mapContainerRef.current) return;
 
-  useEffect(()=>{
-    //Guard Clause: Prevents React from creating the map twice (common in Strict Mode)
-    if(mapRef.current) return;
-
-    //initialize the map
+    // Initialize Map
     mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current!, //Tell Mapbox which div to use
-      style: 'mapbox://styles/mapbox/navigation-night-v1', // The premium dark road theme
-      center: [-98.5795, 39.8283], // Starting coordinates [Longitude, Latitude]
-      zoom: 3, // Initial zoom level (higher is closer)
-    })
+      container: mapContainerRef.current,
+      style: 'mapbox://styles/mapbox/navigation-night-v1',
+      center: [-113.57, 37.10],
+      zoom: 9,
+      trackResize: true // Vital for React
+    });
 
-    //Cleanup Function
-    //This rund when the user logs out or leaves dashboard
-    //It kills the map instance to prevent memory leaks 
-    return ()=>{
-      if(mapRef.current){
+    const map = mapRef.current;
+
+    // Force a resize when the map finishes loading to fix "blank" tiles
+    map.on('load', () => {
+      map.resize();
+    });
+
+    map.on('contextmenu', (e) => {
+      e.preventDefault();
+      setMenuPos({
+        x: e.originalEvent.clientX,
+        y: e.originalEvent.clientY,
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat
+      });
+    });
+
+    map.on('click', () => setMenuPos(null));
+
+    return () => {
+      if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
-    }
-  },[]) //Empty to run only on mount this will prevent looping through api calls. 
+    };
+  }, []);
+
+  const addWaypointFromMenu = () => {
+    if (!menuPos || !mapRef.current) return;
+
+    const id = Date.now().toString();
+    const newPoint: Waypoint = {
+      id,
+      name: `Stop ${waypoints.length + 1}`,
+      coords: `${menuPos.lng.toFixed(5)}, ${menuPos.lat.toFixed(5)}`
+    };
+
+    const marker = new mapboxgl.Marker({ color: '#93b1a6' })
+      .setLngLat([menuPos.lng, menuPos.lat])
+      .addTo(mapRef.current);
+
+    markersRef.current[id] = marker;
+    setWaypoints(prev => [...prev, newPoint]);
+    setMenuPos(null);
+  };
 
   return (
     <div className='DASH_WRAPPER'>
-      {/* Floating UI Layer: Header and other buttons go here.z-index: 10 ensures they stay "above" the map.*/}
+      {menuPos && (
+        <div className="custom-context-menu" style={{ top: menuPos.y, left: menuPos.x }}>
+          <button onClick={addWaypointFromMenu}>📍 Add Waypoint</button>
+          <button onClick={() => setMenuPos(null)}>Cancel</button>
+        </div>
+      )}
+
       <div className='DASH_ui'>
-        <Sidebar mapRef={mapRef}/>
+        <Sidebar 
+          mapRef={mapRef} 
+          waypoints={waypoints} 
+          setWaypoints={setWaypoints}
+          markersRef={markersRef}
+        />
       </div>
 
-      {/* The Map Layer: This div is invisible until Mapbox injects the map into it.*/}
-      <div className='DASH_map' ref={mapContainerRef}>
-
-      </div>
-
+      <div className='DASH_map' ref={mapContainerRef} />
     </div>
   );
 }
 
-export default Dashboard
+export default Dashboard;
