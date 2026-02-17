@@ -22,7 +22,6 @@ TODO: Custom Date and time picker
 # ---------------------------------------------------------------------------- #
 #                                   Dashboard                                  #
 # ---------------------------------------------------------------------------- #
-- TODO: GEOCODING and Searching
 - TODO: Directions between two points
 - TODO: save to directus
 - TODO: Checkpoints
@@ -31,4 +30,4 @@ TODO: Custom Date and time picker
 #                                    Sidbar                                    #
 # ---------------------------------------------------------------------------- #
 -TODO: Add a copy button for clipbaord on coordinates
--TODO: When click on waypoint need map to fly to thos point
+

@@ -1,6 +1,7 @@
-/* CRITICAL: Without this, 100vh can sometimes resolve to 0 in certain browsers/layouts */
+/* Prevent root collapse */
 html, body, #root {
-  height: 100%;
+  height: 100% !important;
+  width: 100% !important;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -10,59 +11,117 @@ html, body, #root {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
-  background-color: #0b0b0b; /* Dark fallback */
+  background-color: #0b0b0b;
 }
 
-/* UI Layer: pointer-events: none is key so you can still right-click the map */
+/* THE MAP: Absolute and locked to the back */
+.DASH_map {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+}
+
+/* THE UI: Overlays map but allows click-through */
 .DASH_ui {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%; /* Make it full size but click-through */
+  height: 100%;
   z-index: 10;
   pointer-events: none; 
 }
 
-/* Re-enable pointer events for the sidebar so we can type/click buttons */
 .DASH_ui > * {
-  pointer-events: auto;
+  pointer-events: auto; /* Re-enable for sidebar */
 }
 
-.DASH_map {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1; /* Behind the UI */
+/* --- Fixed Marker Shape --- */
+.custom-marker {
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 50% 0; /* Teardrop */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transform: rotate(0deg); /* Point sharp corner DOWN */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-/* Context Menu Styling */
+.custom-marker svg {
+  transform: rotate(0deg); /* Counter-rotate icon */
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+}
+
+/* --- Midnight Context Menu --- */
 .custom-context-menu {
   position: fixed;
   z-index: 1000;
-  background: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  background: #121212;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
+  min-width: 180px;
 }
 
 .custom-context-menu button {
-  background: none;
+  background: transparent;
   border: none;
-  color: white;
-  padding: 10px 15px;
+  color: #e0e0e0;
+  padding: 10px 14px;
   text-align: left;
   cursor: pointer;
   font-size: 13px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-.custom-context-menu button:hover {
-  background: #2C3E3B;
+.custom-context-menu button:hover { background: #252525; }
+
+.menu-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: #555;
+  padding: 10px 14px 4px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.icon-swatch-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #222;
+}
+
+.icon-swatch {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-swatch svg { fill: #888; width: 18px; height: 18px; }
+
+.color-swatch-row { display: flex; gap: 10px; padding: 12px 14px; }
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(0, 0, 0, 0.3);
 }
