@@ -1,4 +1,7 @@
-.MAP_CONTAINER{
-  width:100%;
-  height:100%;
+.MAP_CONTAINER {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
