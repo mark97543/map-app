@@ -1,0 +1,48 @@
+.LEFTBARBOTTOM_WRAPPER{
+  text-align: center;
+  position: relative;
+  padding: 10px;
+}
+
+.LEFTBARBOTTOM_LNGLAT {
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--primary-main);
+  transition: color 0.2s;
+}
+
+.LEFTBARBOTTOM_LNGLAT_Title{
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--primary-main);
+  margin-bottom: 5px;
+}
+
+.LEFTBARBOTTOM_LNGLAT:hover {
+  color: var(--text-main);
+}
+
+.COPY_TAG {
+  position: absolute;
+  top: -30px; /* Adjust this based on how high you want it to float */
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: var(--primary-main);
+  color: var(--bg-dark);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  z-index: 100;
+}
+
+/* When the "VISIBLE" class is added */
+.COPY_TAG.VISIBLE {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+

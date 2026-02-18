@@ -9,7 +9,7 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 function Map() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const { setMap } = useDashboard();
+  const { setMap, setMapCoords } = useDashboard();
 
   useEffect(() => {
     // 1. Guard Clause: Prevent double-initialization
@@ -26,6 +26,15 @@ function Map() {
     });
 
     map.current = m;
+
+    //Listem for map Movement
+    m.on('move',()=>{
+      const center = m.getCenter();
+      setMapCoords({
+        lng:center.lng,
+        lat:center.lat
+      })
+    })
 
     // 3. Persistent 3D Buildings Logic
     // This listener ensures buildings are re-added even if the base style changes

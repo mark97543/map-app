@@ -7,21 +7,27 @@ interface DashboardContextType{
   setMap:(map:Map | null)=>void;
   mapSelection:string;
   setMapSelection:(n:string)=>void;
+  mapCoords: { lng: number; lat: number };
+  setMapCoords: (coords: { lng: number; lat: number }) => void;
 }
 
 //Create the actual context object
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 export const DashboardProvider = ({children}:{children:ReactNode})=>{
-  const [map, setMap] = useState<Map | null>(null);
-  const [mapSelection, setMapSelection]=useState('High Contrast');
+  const [map, setMap] = useState<Map | null>(null); //Map Item
+  const [mapSelection, setMapSelection]=useState('High Contrast'); //Selection on which map to use
+  const [mapCoords, setMapCoords] = useState({ lng: -98.57, lat: 39.82 }); //For the center of screen coord
+
 
   return(
     <DashboardContext.Provider value={{
       map,
       setMap,
       mapSelection,
-      setMapSelection
+      setMapSelection,
+      mapCoords,
+      setMapCoords
     }}>
       {children}
     </DashboardContext.Provider>
