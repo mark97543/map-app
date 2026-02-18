@@ -2,22 +2,23 @@
 /*                              High Level Items                              */
 /* -------------------------------------------------------------------------- */
 :root {
-  /* --- BASE CANVAS --- */
-  --bg-dark: #040D12;      /* Use for: Entire page background (body). */
-  --bg-surface: #112121;   /* Use for: Cards, Modals, and Input field backgrounds. */
+  /* --- BASE CANVAS: Deep Obsidian & Charcoal --- */
+  --bg-dark: #0A0F0D;      /* Deepest base - provides high contrast for the map. */
+  --bg-surface: #161B19;   /* Subtle depth - used for Sidebar and Cards. */
   
-  /* --- BRANDING & ACTIONS --- */
-  --primary-main: #5C8374; /* Use for: Primary buttons, Active navigation links. */
-  --primary-muted: #93B1A6;/* Use for: Borders, Dividers, and Icons that aren't active. */
-  --primary-glow: #00FFAB; /* Use for: Success messages, Map markers, and Hover states. */
+  /* --- BRANDING & ACTIONS: Sage & Slate --- */
+  --primary-main: #5C8374; /* Your signature Forest Green - steady and reliable. */
+  --primary-muted: #43534D; /* Desaturated for borders/dividers - stays out of the way. */
+  --primary-glow: #88B1A1; /* "Frosted" Green for hovers - professional, not neon. */
 
-  /* --- TYPOGRAPHY --- */
-  --text-main: #FFFFFF;    /* Use for: Primary headings and button text. */
-  --text-dim: #94A3B8;     /* Use for: Helper text, Placeholder text, and Footers. */
+  /* --- TYPOGRAPHY: Off-White & Steel --- */
+  --text-main: #F4F7F5;    /* Slightly off-white - prevents "vibration" on dark backgrounds. */
+  --text-dim: #7B8C85;     /* Muted sage-grey - perfect for timestamps and miles. */
 
-  /* --- FUNCTIONAL STATES --- */
-  --error-red: #FF5F5F;    /* Use for: Failed login alerts and API error messages. */
-  --warning-gold: #FFD700; /* Use for: Approaching Mapbox API limits (Daily Limit). */
+  /* --- FUNCTIONAL STATES: Muted Alerts --- */
+  --error-red: #D65A5A;    /* Brick Red - visible but fits the dark theme. */
+  --warning-gold: #C29E5D; /* Burnished Gold - high-end warning for fuel gaps. */
+  --success-teal: #70A9A1; /* Calm Teal - for "Saved to Directus" confirmations. */
 
   /* --- Spacing System --- */
   --space-sm: 0.5rem;

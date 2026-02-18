@@ -11,7 +11,7 @@ function Dashboard() {
 
   return (
     <div className='DASH_WRAPPER'>
-
+      <h1>Place map here</h1>
     </div>
   );
 }

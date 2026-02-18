@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, pass: string, firstName: string) => Promise<void>; // Added to interface
+  setUser:React.Dispatch<React.SetStateAction<DirectusUser | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,23 +27,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     async function checkSession() {
-      const authData = window.localStorage.getItem("directus_auth_data");
-      if (!authData) {
+      // 1. Check if we have any auth data stored
+      const authDataString = window.localStorage.getItem("directus_auth_data");
+      
+      if (!authDataString) {
+        console.log("Empty storage. Forcing user to null.");
         setUser(null);
         setLoading(false);
         return;
       }
 
       try {
-        const userData = await client.request(readMe());
-        setUser(userData as DirectusUser);
-      } catch (err) {
+        // 2. Attempt to fetch the current user profile (me) 
+        // This validates if the token in storage is actually still valid
+        const currentUser = await client.request(readMe({
+          fields: ['id', 'email', 'first_name', 'last_name']
+        }));
+
+        if (currentUser) {
+          setUser(currentUser);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        // 3. If the request fails (401), the token is likely expired
+        console.error("Session validation failed:", error);
+        
+        // Optional: Try to refresh the token here if using refresh tokens
+        // Otherwise, clear the stale data
         window.localStorage.removeItem("directus_auth_data");
         setUser(null);
       } finally {
         setLoading(false);
       }
     }
+
     checkSession();
   }, []);
 
@@ -98,14 +117,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleLogout = async () => {
+    console.log("1. Logout Initiated...");
     try {
       await client.logout();
+      console.log("2. Server Logout Success");
     } catch (error) {
-      console.warn("Logout request failed, proceeding with local purge.");
+      console.warn("2. Server Logout failed, clearing local data anyway.");
     } finally {
+      // Kill React State
       setUser(null);
-      window.localStorage.removeItem("directus_auth_data");
-      window.localStorage.clear(); 
+
+      // Clear Storage
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+
+      // KILL COOKIES: This tries to expire common Directus cookies
+      document.cookie = "directus_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "directus_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+      console.log("3. Nuclear Cleanup Complete.");
+      
+      // HARD REDIRECT
+      
+      //window.location.replace('/');
     }
   };
 
@@ -115,7 +149,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       loading, 
       login: handleLogin, 
       logout: handleLogout,
-      register: handleRegister // Added to provider value
+      register: handleRegister, // Added to provider value
+      setUser
     }}>
       {children}
     </AuthContext.Provider>

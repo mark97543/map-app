@@ -1,16 +1,19 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, isRouteErrorResponse } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
 // Page imports
 import Welcome from './pages/Welcome/Welcome' 
 import Dashboard from './pages/Dashboard/Dashboard'
 import NotFound from './pages/NotFound/NotFound'
+import Header from './assets/componets/Header/Header'
 
 function App() {
-
+  const { user, loading } = useAuth();
 
   return (
 
     <BrowserRouter>
+      {user && !loading && <Header />}
       <Routes>
         <Route path='/' element={<Welcome/>}/>
 

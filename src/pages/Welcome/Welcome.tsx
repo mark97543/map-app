@@ -22,7 +22,6 @@ function Welcome(){
     const handleLogin = async()=>{
         setLoading(true);
         setError(null);
-
         try{
             await login(email,password);
             navigate('/dashboard');
@@ -88,7 +87,7 @@ function Welcome(){
             //setError(null);
         }
     },[password, confirmPass, registerform])
-
+    
     return(
         <div className='WELCOME_WRAPPER'>
             <div className='gradient_left'>
