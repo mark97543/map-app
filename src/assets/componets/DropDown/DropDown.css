@@ -1,0 +1,91 @@
+
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--primary-muted); /* Subtle border using muted sage */
+  cursor: pointer;
+  font-size: var(--font-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+.dropdown-toggle:hover {
+  /* Glow effect on hover */
+  background-color: var(--primary-muted);
+  border-color: var(--primary-glow);
+}
+
+.dropdown-menu {
+  position: absolute;
+  background-color: var(--bg-surface);
+  min-width: 220px;
+  /* Applying your heavy shadow for the command center feel */
+  box-shadow: var(--shadow-main);
+  z-index: 1000;
+  top: calc(100% + 8px); /* Gap for floating effect */
+  left: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  padding: var(--space-sm);
+  border: 1px solid var(--primary-muted);
+}
+
+/* Style for links/items within the dropdown menu */
+.dropdown-menu a, 
+.dropdown-menu button {
+  color: var(--text-main);
+  padding: var(--space-sm) var(--space-md);
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-size: var(--font-sm);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-menu a:hover, 
+.dropdown-menu button:hover {
+  /* Primary Green background for the selected item */
+  background-color: var(--primary-main);
+  color: var(--bg-dark); /* Contrast color for text on green background */
+}
+
+.arrow {
+  margin-left: var(--space-sm);
+  color: var(--text-dim); /* Muted color for the icon */
+  transition: transform 0.2s ease-in-out;
+}
+
+.dropdown-item, 
+.dropdown-item-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: var(--transition-smooth);
+}
+
+/* Optional: Scrollbar styling for long menus to match the dark theme */
+.dropdown-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--primary-muted);
+  border-radius: 10px;
+}

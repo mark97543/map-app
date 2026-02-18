@@ -1,22 +1,23 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-
+import { Map } from 'mapbox-gl';
 //Define what datas lives in here 
 
 interface DashboardContextType{
-  title:string;
-  setTitle:(n:string)=>void;
+  map:Map | null;
+  setMap:(map:Map | null)=>void;
+
 }
 
 //Create the actual context object
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 export const DashboardProvider = ({children}:{children:ReactNode})=>{
-  const [title, setTitle]=useState('');
+  const [map, setMap] = useState<Map | null>(null);
 
   return(
     <DashboardContext.Provider value={{
-      title,
-      setTitle
+      map,
+      setMap
     }}>
       {children}
     </DashboardContext.Provider>

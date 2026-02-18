@@ -1,6 +1,7 @@
 import './Header.css'
 import Button from '../Button/Button'
 import { useAuth } from '../../../context/AuthContext'
+import MapSelector from './MapSelector/MapSelector'
 
 function Header() {
   const {logout, setUser}=useAuth()
@@ -25,7 +26,7 @@ function Header() {
       </div>
 
       <div className='HEADER_LINKS'>
-
+        <MapSelector/>
       </div>
 
       <div className='HEADER_USER'>
