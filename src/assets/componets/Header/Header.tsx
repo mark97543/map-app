@@ -21,7 +21,7 @@ function Header() {
     }
   }
 
-  console.log(user?.first_name)
+
 
   if (!user) {
     return <div className="HEADER_WRAPPER">Not Logged In</div>;

@@ -26,43 +26,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true; // Prevents state updates on unmounted components
+
     async function checkSession() {
-      // 1. Check if we have any auth data stored
-      const authDataString = window.localStorage.getItem("directus_auth_data");
+      const authData = window.localStorage.getItem("directus_auth_data");
       
-      if (!authDataString) {
-        console.log("Empty storage. Forcing user to null.");
-        setUser(null);
-        setLoading(false);
+      // 1. If no token, we are done
+      if (!authData) {
+        //console.log("Empty storage. Forcing user to null.");
+        if (isMounted) {
+          setUser(null);
+          setLoading(false);
+        }
         return;
       }
 
+      // 2. If we HAVE a token, we must ask the server who this is
       try {
-        // 2. Attempt to fetch the current user profile (me) 
-        // This validates if the token in storage is actually still valid
-        const currentUser = await client.request(readMe({
-          fields: ['id', 'email', 'first_name', 'last_name']
+        const userData = await client.request(readMe({
+          fields: ['id', 'email', 'first_name', 'status']
         }));
 
-        if (currentUser) {
-          setUser(currentUser);
-        } else {
-          setUser(null);
+        if (isMounted) {
+          setUser(userData as DirectusUser);
+          //console.log("Session verified for:", userData.first_name);
         }
-      } catch (error) {
-        // 3. If the request fails (401), the token is likely expired
-        console.error("Session validation failed:", error);
-        
-        // Optional: Try to refresh the token here if using refresh tokens
-        // Otherwise, clear the stale data
-        window.localStorage.removeItem("directus_auth_data");
-        setUser(null);
+      } catch (err) {
+        console.warn("Token exists but is invalid/expired. Clearing...");
+        if (isMounted) {
+          setUser(null);
+          window.localStorage.removeItem("directus_auth_data");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     checkSession();
+
+    return () => {
+      isMounted = false; // Cleanup function
+    };
   }, []);
 
   const handleLogin = async (email: string, pass: string) => {
@@ -117,10 +121,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleLogout = async () => {
-    console.log("1. Logout Initiated...");
+    //console.log("1. Logout Initiated...");
     try {
       await client.logout();
-      console.log("2. Server Logout Success");
+      //console.log("2. Server Logout Success");
     } catch (error) {
       console.warn("2. Server Logout failed, clearing local data anyway.");
     } finally {
@@ -135,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       document.cookie = "directus_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = "directus_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-      console.log("3. Nuclear Cleanup Complete.");
+      //console.log("3. Nuclear Cleanup Complete.");
       
       // HARD REDIRECT
       
