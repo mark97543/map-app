@@ -5,7 +5,8 @@ import { Map } from 'mapbox-gl';
 interface DashboardContextType{
   map:Map | null;
   setMap:(map:Map | null)=>void;
-
+  mapSelection:string;
+  setMapSelection:(n:string)=>void;
 }
 
 //Create the actual context object
@@ -13,11 +14,14 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 
 export const DashboardProvider = ({children}:{children:ReactNode})=>{
   const [map, setMap] = useState<Map | null>(null);
+  const [mapSelection, setMapSelection]=useState('High Contrast');
 
   return(
     <DashboardContext.Provider value={{
       map,
-      setMap
+      setMap,
+      mapSelection,
+      setMapSelection
     }}>
       {children}
     </DashboardContext.Provider>

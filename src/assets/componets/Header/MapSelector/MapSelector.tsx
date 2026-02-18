@@ -5,56 +5,86 @@ import { useState } from 'react';
 
 
 function MapSelector(){
-  const {map} =useDashboard();
-  const [selection, setSelection]=useState('High Contrast')
+  const {map, mapSelection, setMapSelection} =useDashboard();
+  //const [selection, setSelection]=useState('High Contrast')
 
   const mapStyles = [
     { 
       id: 'dark', 
-      label: selection === 'Tactical Dark' ? '● Tactical Dark' : 'Tactical Dark', 
+      label: mapSelection === 'Tactical Dark' ? '● Tactical Dark' : 'Tactical Dark', 
       action: () => {
         map?.setStyle('mapbox://styles/mapbox/dark-v11');
-        setSelection('Tactical Dark');
+        map?.easeTo({
+          pitch:0,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('Tactical Dark');
       }
     },
     {
       id:'light',
-      label: selection === 'Light'? '● Light' : 'Light',
+      label: mapSelection === 'Light'? '● Light' : 'Light',
       action:()=>{
         map?.setStyle('mapbox://styles/mapbox/light-v11');
-        setSelection('Light');
+        map?.easeTo({
+          pitch:0,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('Light');
       }
     },
     { 
       id: 'sat', 
-      label: selection === 'Satellite Streets'? '● Satellite Streets':'Satellite Streets', 
+      label: mapSelection === 'Satellite Streets'? '● Satellite Streets':'Satellite Streets', 
       action: () => {
         map?.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
-        setSelection('Satellite Streets');
+        map?.easeTo({
+          pitch:0,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('Satellite Streets');
       }
     },
     {
       id:'sat2',
-      label: selection === 'Satellite Clean'? '● Satellite Clean':'Satellite Clean', 
+      label: mapSelection === 'Satellite Clean'? '● Satellite Clean':'Satellite Clean', 
       action: () => {
         map?.setStyle('mapbox://styles/mapbox/satellite-v9');
-        setSelection('Satellite Clean');
+        map?.easeTo({
+          pitch:0,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('Satellite Clean');
       }
     },
     {
       id:'high',
-      label: selection === 'High Contrast'? '● High Contrast':'High Contrast', 
+      label: mapSelection === 'High Contrast'? '● High Contrast':'High Contrast', 
       action: () => {
         map?.setStyle('mapbox://styles/mapbox/navigation-night-v1');
-        setSelection('High Contrast');
+        map?.easeTo({
+          pitch:0,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('High Contrast');
       }
     },
     {
       id:'out',
-      label: selection === 'Outdoors'? '● Outdoors':'Outdoors', 
+      label: mapSelection === 'Outdoors'? '● Outdoors':'Outdoors', 
       action: () => {
         map?.setStyle('mapbox://styles/mapbox/outdoors-v12');
-        setSelection('Outdoors');
+        map?.easeTo({
+          pitch:45,
+          bearing:0,
+          duration:1000,
+        })
+        setMapSelection('Outdoors');
       }
     }
   ];
