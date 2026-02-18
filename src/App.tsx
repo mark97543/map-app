@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, isRouteErrorResponse } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
+import { DashboardProvider } from './context/DashboardContext'
 // Page imports
 import Welcome from './pages/Welcome/Welcome' 
 import Dashboard from './pages/Dashboard/Dashboard'
@@ -13,24 +14,24 @@ function App() {
   return (
 
     <BrowserRouter>
-      {user && !loading && <Header />}
-      <Routes>
-        <Route path='/' element={<Welcome/>}/>
+      <DashboardProvider>
+        {user && !loading && <Header />}
+        <Routes>
+          <Route path='/' element={<Welcome/>}/>
 
-        {/* Protected Route - Only accessible if Directus returns a user */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Protected Route - Only accessible if Directus returns a user */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </DashboardProvider>
     </BrowserRouter>
-
   )
 }
 
