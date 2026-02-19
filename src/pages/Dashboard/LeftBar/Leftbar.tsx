@@ -1,5 +1,6 @@
 import './Leftbar.css'
 import LeftbarBottom from './LeftbarBottom/LeftbarBottom'
+import LeftBarTop from './LeftBarTop/LeftBarTop'
 
 
 function Leftbar(){
@@ -8,7 +9,11 @@ function Leftbar(){
     <div className='LEFTBAR_Wrapper'>
       
       <div className='LEFTBAR_TOP'>
-        <h1>Leftbar Top</h1>
+        <LeftBarTop />
+      </div>
+
+      <div className='LEFTBAR_MIDDLE'>
+        <h1>Middle Bar</h1>
       </div>
 
       <div className='LEFTBAR_BOTTOM'>

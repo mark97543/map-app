@@ -1,0 +1,68 @@
+.LEFTBARTOP_WRAPPER {
+  position: relative; /* This is the anchor for the dropdown */
+  overflow: visible !important;
+  width: 100%;
+  padding-bottom: 20px;
+  z-index: 100;
+}
+
+.SEARCH_DROPDOWN {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  right: 0;
+  
+  background-color: var(--bg-surface);
+  border: 1px solid var(--primary-muted);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-main);
+  
+  /* 🧼 CLEANUP: Remove Scrollbars */
+  max-height: none; 
+  overflow: visible; 
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  
+  /* Ensure it sits on the very top layer */
+  z-index: 9999; 
+}
+
+.SEARCH_DROPDOWN li {
+  padding: 12px 15px;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.SEARCH_DROPDOWN li:last-child {
+  border-bottom: none;
+}
+
+.SEARCH_DROPDOWN li:hover {
+  background-color: rgba(92, 131, 116, 0.2); /* Sage Green Tint */
+  color: var(--primary-main);
+}
+
+.SEARCH_DROPDOWN .ICON {
+  opacity: 0.6;
+}
+
+.SEARCH_DROPDOWN .TEXT {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Keeps long addresses on one line */
+}
+
+.SEARCH_DROPDOWN::-webkit-scrollbar {
+  display: none;
+}
+
+.SEARCH_DROPDOWN {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
