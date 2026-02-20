@@ -25,7 +25,7 @@ function LeftBarTop(){
     setShowSuggestions(false);
     map?.flyTo({
       center:[lon, lat],
-      zoom:12,
+      zoom:16,
       essential:true
     })
     setSearch('')
