@@ -16,7 +16,7 @@
   border: 1px solid var(--primary-muted);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-main);
-  
+
   /* 🧼 CLEANUP: Remove Scrollbars */
   max-height: none; 
   overflow: visible; 
@@ -30,13 +30,25 @@
 
 .SEARCH_DROPDOWN li {
   padding: 12px 15px;
-  font-size: 13px;
+  font-size: var(--font-md);
   color: var(--text-main);
   cursor: pointer;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.SEARCH_DROPDOWN li p {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;    /* Change to 2 or 3 depending on preference */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .SEARCH_DROPDOWN li:last-child {
@@ -50,12 +62,6 @@
 
 .SEARCH_DROPDOWN .ICON {
   opacity: 0.6;
-}
-
-.SEARCH_DROPDOWN .TEXT {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Keeps long addresses on one line */
 }
 
 .SEARCH_DROPDOWN::-webkit-scrollbar {

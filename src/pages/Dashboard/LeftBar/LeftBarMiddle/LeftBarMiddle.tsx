@@ -22,6 +22,8 @@ function LeftBarMiddle(){
         return arrayMove(items, oldIndex, newIndex);
       });
     }
+
+    //TODO: Need to have a function to save to DB once drag event is completed. 
   };
 
   return(

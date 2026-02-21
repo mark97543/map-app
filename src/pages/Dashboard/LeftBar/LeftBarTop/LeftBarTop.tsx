@@ -71,6 +71,7 @@ function LeftBarTop(){
         })) ||[];
 
         setSuggestions(results);
+        if(results.length >0) setShowSuggestions(true);
       }catch(err){
         console.error("Geoapify error:", err);
       }
@@ -102,7 +103,7 @@ function LeftBarTop(){
       />
 
       {/* dropdown list */}
-      {suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && (
         <ul className='SEARCH_DROPDOWN'>
           {suggestions.map((s)=>(
             <li key={s.place_id} onClick={() => handleSelect(s)}>

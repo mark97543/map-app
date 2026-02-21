@@ -30,19 +30,24 @@ interface Inp {
    * Blur Event (Losing Focus) 👈 Added this
    */
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+
+  /**
+   * Class Name
+   */
+  classer?:string;
 }
 
 /**
  * Standard Input
  * @param label
  */
-function Input({ labelText, placeholder, type = 'text', value, change, onKeyDown, onBlur }: Inp) {
+function Input({ labelText, placeholder, type = 'text', value, change, onKeyDown, onBlur, classer }: Inp) {
 
   return (
     <div className={`INPUT_DIV`}>
       {labelText && <label className='INPUT_LABEL'>{labelText}</label>}
       <input
-        className='INPUT'
+        className={`INPUT ${classer}`}
         placeholder={placeholder}
         type={type}
         value={value}
