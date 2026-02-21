@@ -27,3 +27,49 @@
   transform: scale(1.2);
   background-color: #ffffff;
 }
+
+/* The container for the button */
+.mapboxgl-popup-content {
+  background: var(--bg-surface) !important; /* Matches your sidebar background */
+  border: 1px solid var(--primary-main);    /* Your Sage Green border */
+  color: var(--text-main);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  /* font-family */
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* The little arrow tip */
+.mapboxgl-popup-tip {
+  border-top-color: var(--primary-main) !important;
+  border-bottom-color: var(--primary-main) !important;
+  border-left-color: var(--primary-main) !important;
+  border-right-color: var(--primary-main) !important;
+}
+
+.TACTICAL_POPUP_BTN {
+  background: transparent;
+  color: var(--primary-main);
+  border: 1px solid var(--primary-main);
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.TACTICAL_POPUP_BTN:hover {
+  background: var(--primary-main);
+  color: var(--bg-dark); /* Contrast color */
+  box-shadow: 0 0 10px var(--primary-main);
+}
+
+.mapboxgl-popup-close-button {
+  color: var(--text-main);
+  font-size: 1.2rem;
+  padding: 5px;
+}

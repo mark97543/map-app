@@ -1,6 +1,6 @@
 import './Map.css'
 import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { Popup } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useDashboard } from '../../../context/DashboardContext';
 
@@ -9,13 +9,14 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 function Map() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const {locations, setMap, setMapCoords } = useDashboard();
+  const {locations, setMap, setMapCoords, setLocations } = useDashboard();
+  const activePopup = useRef<mapboxgl.Popup | null>(null);
 
   useEffect(() => {
-    // 1. Guard Clause: Prevent double-initialization
+    // Guard Clause: Prevent double-initialization
     if (map.current || !mapContainer.current) return;
 
-    // 2. Initialize Map Instance
+    // Initialize Map Instance
     const m = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/navigation-night-v1',
@@ -36,7 +37,7 @@ function Map() {
       })
     })
 
-    // 3. Persistent 3D Buildings Logic
+    // Persistent 3D Buildings Logic
     // This listener ensures buildings are re-added even if the base style changes
     m.on('style.load', () => {
       const layers = m.getStyle().layers;
@@ -64,14 +65,14 @@ function Map() {
       }
     });
 
-    // 4. Global State & Controls
+    // Global State & Controls
     m.on('load', () => {
       setMap(m); // Share ready instance with DashboardContext
     });
     
     m.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // 5. User Geolocation
+    //  User Geolocation
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -86,7 +87,50 @@ function Map() {
       )
     }
 
-    // 6. Cleanup
+    //Context menu
+    m.on('contextmenu', (e)=>{
+      //Remove if there is active popup
+      if (activePopup.current) {
+          activePopup.current.remove();
+      }
+
+      //save coord
+      const {lng, lat}=e.lngLat;
+
+      //Temp Button Element
+      const btn = document.createElement('button');
+      btn.innerText = 'Add Waypoint';
+      btn.className = 'TACTICAL_POPUP_BTN'
+
+      //Define what will happen when they click the button
+      btn.onclick=()=>{
+        //add new waypoint
+        setLocations((prev)=>[
+          ...prev, {
+            id:`manual-${Date.now()}`,
+            name: `Waypoint ${prev.length + 1}`,
+            coord:{lat,lng}
+          }
+        ])
+        popup.remove();
+        activePopup.current = null;
+      }
+
+      //Create and add popup menu
+      const popup = new mapboxgl.Popup({closeButton:false})
+        .setLngLat([lng,lat])
+        .setDOMContent(btn)
+        .addTo(m);
+      //Store Popup in the ref so we can kill it with next right click
+      activePopup.current = popup;
+
+      //Clear popup when user clicles elsewhere
+      popup.on('close',()=>{
+        activePopup.current = null;
+      })
+    })
+
+    //  Cleanup
     return () => {
       if (map.current) {
         map.current.remove();
