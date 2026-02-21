@@ -1,87 +1,114 @@
-.LEFTBAR_MIDDLE_WRAPPER{
+.LEFTBAR_MIDDLE_WRAPPER {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
   row-gap: var(--space-sm);
+  padding-right: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.LEFTBAR_LOCATION_DIV p {
-  margin: 0; /* Clear the default margins to get true centering */
+/* Width of the scrollbar */
+.LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar {
+  width: 6px;
 }
 
-.LEFTBAR_LOCATION_DIV{
+/* The Track (background) */
+.LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-track {
+  background: var(--bg-surface); 
+  border-radius: 10px;
+}
+
+/* The Thumb (the moving part) */
+.LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-thumb {
+  background: var(--primary-main);
+  border-radius: 10px;
+  border: 1px solid var(--bg-surface); /* Creates a small gap effect */
+}
+
+/* Hover effect on the thumb */
+.LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-thumb:hover {
+  background: #7aa392; /* Slightly brighter version of your Sage Green */
+  cursor: pointer;
+}
+
+.LEFTBAR_LOCATION_DIV {
   display: grid;
-  grid-template-columns: 25px auto 25px;
+  grid-template-columns: 45px 1fr 35px;
   grid-template-rows: auto auto;
   background-color: var(--primary-muted);
   padding: var(--space-sm);
   border-radius: var(--radius-sm);
   align-items: center;
-  /* gap: var(--space-sm); */
-}
-
-/*This is the grab button  */
-.LEFTBAR_LOCATION_DIV :nth-child(1){ 
-  grid-row: 1/3;
-  text-align: left;
-  font-size: x-large;
-}
-
-.LEFTBAR_LOCATION_DIV :nth-child(1):hover{
-  cursor: grab;
-}
-
-.LEFTBAR_LOCATION_DIV :nth-child(1):active{
-  cursor: grabbing;
-}
-
-/* This is the top row (name) of the element */
-.LEFTBAR_LOCATION_DIV :nth-child(2){
-  border-bottom: 1px solid var(--bg-surface);
-  grid-column: 2;
-  grid-row: 1;
-  padding-bottom: 2px;
-  text-align: center;
-}
-
-
-/* This is the second row in the Grid (Long/Lat) */
-.LEFTBAR_LOCATION_DIV :nth-child(3){
-  grid-column: 2;
-  grid-row: 2;
-  padding-top: 2px;
-  text-align: center;
-}
-
-/* Delete Button*/
-.LEFTBAR_DELETE{
-  grid-column: 3;
-  grid-row: 1/3;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color:var(--text-main);
-}
-
-.LEFTBAR_DELETE:hover{
-  cursor: pointer;
-}
-
-.LEFTBAR_DELETE:active{
-  transform: translateY(3px);
-  filter: brightness(0.8);
 }
 
 .INDEX_NUMBER {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* font-family */
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;
-  font-size: x-large;
-  color: var(--text-main);
+  font-size: 1rem;
+  color: var(--bg-dark);
   background: var(--primary-main);
-  padding: 2px 6px;
   border-radius: 4px;
-  grid-row: 1/4;
-  min-width: 20px;
+  justify-self: start;
+  cursor: grab;
+  touch-action: none;
+}
+
+.INDEX_NUMBER:active {
+  cursor: grabbing;
+}
+
+.LEFTBAR_LOCATION_DIV p {
+  margin: 0;
+  grid-column: 2;
   text-align: center;
+  width: 100%;
+}
+
+.LEFTBAR_LOCATION_DIV p:nth-of-type(1) {
+  grid-row: 1;
+  border-bottom: 1px solid var(--bg-surface);
+  padding-bottom: 2px;
+  /* margin: 0 var(--space-sm); */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  margin-right: var(--space-sm);
+}
+
+.LEFTBAR_LOCATION_DIV p:nth-of-type(2) {
+  grid-row: 2;
+  padding-top: 2px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  /* font-family */
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.LEFTBAR_DELETE {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.LEFTBAR_DELETE:active {
+  transform: translateY(2px);
+  filter: brightness(0.8);
 }

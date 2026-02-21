@@ -11,7 +11,7 @@ interface Suggestion{
 }
 
 function LeftBarTop(){
-  const {search, setSearch, map} =useDashboard();
+  const {search, setSearch, map, setLocations} =useDashboard();
   const [suggestions, setSuggestions]=useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -36,7 +36,8 @@ function LeftBarTop(){
     if (e.key === 'Enter' && suggestions.length > 0) {
       // Pick the first result in the list automatically
       const topResult = suggestions[0];
-      flyToLocation(topResult.lon, topResult.lat, topResult.formatted);
+      //flyToLocation(topResult.lon, topResult.lat, topResult.formatted);
+      handleSelect(topResult);
     }
   }
 
@@ -81,15 +82,37 @@ function LeftBarTop(){
   }, [search, GEOAPIFY_KEY])
   
   const handleSelect = (s:Suggestion)=>{
+    const shortName = s.formatted.split(',')[0];
     setSearch(s.formatted);
-    setSuggestions([])//Close Dropdown
 
-    map?.flyTo({
-      center:[s.lon, s.lat],
-      zoom:16,
-      essential:true
-    })
-    setSearch('')
+
+    //Functional State Update. When you select from list this will fire and add marker
+    setLocations((prev) => {
+      // Check for duplicates
+      if (prev.find(loc => loc.id === s.place_id)) {
+        console.warn("Location already in mission path.");
+        return prev; 
+      }
+      // Define the new tactical point
+      const newLocation = {
+        id: s.place_id, // Use Geoapify's ID or crypto.randomUUID()
+        name: shortName,
+        coord: {
+          lat: s.lat,
+          lng: s.lon
+        }
+      };
+      // Return the new array to trigger the Sidebar & Map markers to update
+      return [...prev, newLocation];
+    });
+
+      map?.flyTo({
+        center:[s.lon, s.lat],
+        zoom:16,
+        essential:true
+      })
+      setSuggestions([])//Close Dropdown
+      setSearch('')
   }
 
   return(
