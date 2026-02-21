@@ -31,11 +31,12 @@ function LeftBarMiddle(){
       {locations && locations.length > 0 ? (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={locations} strategy={verticalListSortingStrategy}>
-            {locations?.map((location)=>(
-              <SortableLocation
-                key={location.id}
-                location={location}
+            {locations.map((location, index) => ( 
+              <SortableLocation 
+                key={location.id} 
+                location={location} 
                 onDelete={DeleteItem}
+                index={index} 
               />
             ))}
           </SortableContext>

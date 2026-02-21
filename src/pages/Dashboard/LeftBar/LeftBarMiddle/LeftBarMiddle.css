@@ -72,3 +72,16 @@
   transform: translateY(3px);
   filter: brightness(0.8);
 }
+
+.INDEX_NUMBER {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: x-large;
+  color: var(--text-main);
+  background: var(--primary-main);
+  padding: 2px 6px;
+  border-radius: 4px;
+  grid-row: 1/4;
+  min-width: 20px;
+  text-align: center;
+}

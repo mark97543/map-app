@@ -5,3 +5,25 @@
   top: 0;
   left: 0;
 }
+
+.MAP_MARKER {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px; /* Square tactical look */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-family: monospace;
+  border: 2px solid var(--bg-dark);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.MAP_MARKER:hover {
+  transform: scale(1.2);
+  background-color: #ffffff;
+}

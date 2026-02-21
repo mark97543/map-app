@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { DashboardProvider, useDashboard } from '../../../../../context/DashboardContext';
 
-function SortableLocation({location, onDelete}:{location:any, onDelete: (id: string) => void}){
+function SortableLocation({location, onDelete,index}:{location:any, onDelete: (id: string) => void, index:number}){
   const {
     attributes,
     listeners,
@@ -33,7 +33,8 @@ function SortableLocation({location, onDelete}:{location:any, onDelete: (id: str
       style={style}
       className='LEFTBAR_LOCATION_DIV' onClick={()=>handleLocationClick(location)} >
         {/* LISTENERS go on the drag handle so only the dots trigger the move */}
-        <p {...attributes} {...listeners} className="DRAG_HANDLE">⠿</p>
+        {/* <p {...attributes} {...listeners} className="DRAG_HANDLE">⠿</p> */}
+        <span {...attributes} {...listeners} className="INDEX_NUMBER DRAG_HANDLE">{index + 1}</span>
         <p>{location.name}</p>
         <p>{location.coord.lat.toFixed(4)}, {location.coord.lng.toFixed(4)}</p>
         <button onClick={(e) =>{

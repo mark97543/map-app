@@ -9,7 +9,7 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 function Map() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const { setMap, setMapCoords } = useDashboard();
+  const {locations, setMap, setMapCoords } = useDashboard();
 
   useEffect(() => {
     // 1. Guard Clause: Prevent double-initialization
@@ -95,6 +95,33 @@ function Map() {
       }
     }
   }, [setMap]);
+
+  //Set Markers on map
+  useEffect(()=>{
+    if(!map || !locations) return;
+
+    //Create Cleanup array to store markers so can remove later
+    const currentMarkers:mapboxgl.Marker[]=[];
+    //Clear existing markers
+
+    locations.forEach((loc,index)=>{
+      //Custom HTML element for marker
+      const el = document.createElement('div');
+      el.className='MAP_MARKER';
+      el.innerText = (index+1).toString();
+
+      //Add marker to map
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([loc.coord.lng, loc.coord.lat])
+        .addTo(map.current!);
+      currentMarkers.push(marker);
+    });
+
+    //Cleanup function
+    return () =>{
+      currentMarkers.forEach(m=>m.remove());
+    }
+  },[locations])
 
   return (
     <div ref={mapContainer} className='MAP_CONTAINER' />
