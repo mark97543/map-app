@@ -112,3 +112,56 @@
   transform: translateY(2px);
   filter: brightness(0.8);
 }
+
+.TRAVEL_CONNECTOR {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Negative margin helps the line feel connected to the cards */
+  margin: -5px 0; 
+}
+
+.CONNECTOR_LINE {
+  width: 2px;
+  height: 15px;
+  background: var(--primary-main);
+  opacity: 0.4;
+}
+
+.INTERIM_ASSESSMENT {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(92, 131, 116, 0.1); /* Subtle tint of your sage green */
+  border: 1px dashed var(--primary-main);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--primary-main);
+}
+
+.STATS_ROW {
+  display: flex;
+  gap: 10px;
+}
+
+.ADD_INTERIM_BTN {
+  background: var(--primary-main);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.ADD_INTERIM_BTN:hover {
+  transform: scale(1.2);
+  filter: brightness(1.2);
+}

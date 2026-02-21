@@ -3,6 +3,7 @@ import { DashboardProvider, useDashboard } from '../../../../context/DashboardCo
 import { DndContext, closestCenter,type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableLocation from './Components/SortableLocation';
+import React from 'react';
 
 function LeftBarMiddle(){
   const {locations, setLocations} =useDashboard();
@@ -31,13 +32,35 @@ function LeftBarMiddle(){
       {locations && locations.length > 0 ? (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={locations} strategy={verticalListSortingStrategy}>
-            {locations.map((location, index) => ( 
-              <SortableLocation 
-                key={location.id} 
-                location={location} 
-                onDelete={DeleteItem}
-                index={index} 
-              />
+            {locations.map((location, index) => (
+              <React.Fragment key={location.id}>
+                {/*Main waypoint card */}
+                <SortableLocation 
+                  key={location.id} 
+                  location={location} 
+                  onDelete={DeleteItem}
+                  index={index} 
+                />
+                {/*Connector only if not the last item */}
+                {index < locations.length -1 &&(
+                  <div className='TRAVEL_CONNECTOR'>
+                    <div className='CONNECTOR_LINE'/>
+                    <div className='INTERIM_ASSESMENT'>
+                      <div className='STATS_ROW'>
+                        <span>1h15m / 101.1mi</span>
+                        <button 
+                          className='ADD_INTERIM_BTN'
+                          title="Add Interim Assessment Point"
+                          onClick={() => console.log("Insert midpoint logic here")} 
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="CONNECTOR_LINE" />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </SortableContext>
         </DndContext>
@@ -59,6 +82,7 @@ export default LeftBarMiddle
 //TODO: Add Arrival TIme
 //TODO: Add Depart Time
 //TODO: Add distance, time between stops 
-//TODO: Draggable Elements
 //TODO: Add more Data
 //TODO: Need to figure where to add notes (Maybe seperate screen)
+//TODO: Need to Add Midpoint Logic
+//TODO: Right Click to go to google maps. 

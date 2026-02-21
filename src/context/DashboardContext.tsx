@@ -19,6 +19,8 @@ interface DashboardContextType{
   setSearch:(n:string)=>void;
   locations:Locations[];
   setLocations:React.Dispatch<React.SetStateAction<Locations[]>>;
+  routeData:any;
+  setRouteData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 
@@ -31,6 +33,7 @@ export const DashboardProvider = ({children}:{children:ReactNode})=>{
   const [mapSelection, setMapSelection]=useState('High Contrast'); //Selection on which map to use
   const [mapCoords, setMapCoords] = useState({ lng: -98.57, lat: 39.82 }); //For the center of screen coord
   const [search, setSearch]=useState(''); //Search for the sidebar
+  const [routeData, setRouteData]=useState<any>(null);
   //const [locations, setLocations] = useState<Locations[]>([]); //Locations we record
 
   //Dummy Locations
@@ -73,7 +76,9 @@ export const DashboardProvider = ({children}:{children:ReactNode})=>{
       search,
       setSearch,
       locations,
-      setLocations
+      setLocations,
+      routeData,
+      setRouteData
     }}>
       {children}
     </DashboardContext.Provider>
