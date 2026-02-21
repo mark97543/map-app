@@ -6,7 +6,7 @@ import SortableLocation from './Components/SortableLocation';
 import React from 'react';
 
 function LeftBarMiddle(){
-  const {locations, setLocations} =useDashboard();
+  const {locations, setLocations, routeData} =useDashboard();
 
   const DeleteItem = (id:string) =>{
     setLocations((prevLocations)=>prevLocations.filter(location=>location.id!== id));
@@ -27,12 +27,32 @@ function LeftBarMiddle(){
     //TODO: Need to have a function to save to DB once drag event is completed. 
   };
 
+  const formatDuration = (totalSeconds: number): string => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.round((totalSeconds % 3600) / 60);
+
+    // If it's 1h 60m due to rounding, roll it over
+    if (minutes === 60) {
+      return `${hours + 1}h 00m`;
+    }
+
+    // Format minutes to always be two digits (e.g., 05m instead of 5m)
+    const paddedMins = minutes.toString().padStart(2, '0');
+
+    if (hours > 0) {
+      return `${hours}h ${paddedMins}m`;
+    }
+    
+    return `${minutes}m`;
+  };
+
   return(
     <div className='LEFTBAR_MIDDLE_WRAPPER'>
       {locations && locations.length > 0 ? (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={locations} strategy={verticalListSortingStrategy}>
             {locations.map((location, index) => (
+              
               <React.Fragment key={location.id}>
                 {/*Main waypoint card */}
                 <SortableLocation 
@@ -47,7 +67,14 @@ function LeftBarMiddle(){
                     <div className='CONNECTOR_LINE'/>
                     <div className='INTERIM_ASSESMENT'>
                       <div className='STATS_ROW'>
-                        <span>1h15m / 101.1mi</span>
+                        {/* Guard: Only access duration/distance if the specific leg exists */}
+                        {routeData?.legs && routeData.legs[index] ? (
+                          <span>
+                            {formatDuration(routeData.legs[index].duration)} / {(routeData.legs[index].distance / 1609.34).toFixed(1)}mi
+                          </span>
+                        ) : (
+                          <span className="STATS_LOADING">Calculating...</span>
+                        )}
                         <button 
                           className='ADD_INTERIM_BTN'
                           title="Add Interim Assessment Point"
