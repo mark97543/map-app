@@ -16,7 +16,7 @@ export const getAllTrips = async () => {
   }
 
   const response = await fetch(
-    `${DIRECTUS_URL}/items/trips?fields=id,title,trip_summary,total_distance,total_time,trip_rating,status`,
+    `${DIRECTUS_URL}/items/trips?fields=id,title,trip_summary,total_distance,total_time,trip_rating,status,trip_id`,
     {
       method: 'GET',
       headers: {

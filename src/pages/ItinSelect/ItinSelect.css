@@ -1,5 +1,7 @@
 .ItinSelect_Wrapper{
   padding: var(--space-md);
+  max-width: 1600px;
+  margin:0 auto;
 }
 
 .ItinSelect_TopRow{
@@ -13,9 +15,68 @@
 }
 
 .ItinSelect_Grid {
+  margin-top: var(--space-lg);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
-  border: 2px solid red; /* Temporary debug border */
   min-height: 100px;     /* Ensure it doesn't collapse */
+  justify-content: center; /* Centers columns if they don't fill the whole row */
+}
+
+.ItinSelect_TripCard{
+  border:1px solid var(--primary-muted);
+  background: var(--bg-surface);
+  width:100%;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-main);
+}
+
+.ItinSelect_TripCard h2{
+  text-align: center;
+  /* The Truncation Magic */
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Limits text to 1 line */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Layout & Centering */
+  width: 100%;
+  margin: var(--space-xs) 0;
+  text-align: center; /* Keeps the text centered within the truncation */
+  
+  /* Make the ID stand out slightly less than the Title */
+  font-size: var(--font-lg); 
+  color: var(--color-text-bright);
+}
+
+.draft_pill,
+.planned_pill,
+.complete_pill,
+.archived_pill{
+  border:1px solid var(--primary-muted);
+  border-radius: 30px;
+  padding: var(--space-xs);
+  width:95px;
+  text-align: center;
+  margin-top: var(--space-xs);
+}
+
+.draft_pill{
+  background: var(--error-red);
+  color: rgb(255, 255, 255);
+}
+
+.planned_pill{
+  background: var(--success-teal);
+  color: black;
+}
+
+.archived_pill{
+  background: brown;
+}
+
+.complete_pill{
+  background: var(--warning-gold);
 }

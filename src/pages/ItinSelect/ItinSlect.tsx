@@ -39,7 +39,10 @@ function ItinSelect(){
         {allTrips && allTrips.length>0?(
           allTrips.map((trip)=>(
             <div key={trip.id} className='ItinSelect_TripCard'>
-              <h1>Hello</h1>
+              <h2>{trip.trip_id}:{trip.title}</h2>
+              <div>
+                {statusPill(trip.status, trip.trip_rating)}
+              </div>
             </div>
           ))
         ):(
@@ -53,4 +56,19 @@ function ItinSelect(){
 
 export default ItinSelect
 
+const statusPill=(status:string, rating:number)=>{
+  if(status==='draft'){
+    return(<div className='draft_pill'>Draft</div>)
+  }
+  if(status==='planned'){
+    return(<div className='planned_pill'>Planned</div>)
+  }
+  if(status==='completed'){
+    const totalStars=5;
+    return(<div className='complete_pill'>{'★'.repeat(rating).padEnd(totalStars,'☆')}</div>)
+  }
+  if(status==='archived'){
+    return(<div className='archived_pill'>Archived</div>)
+  }
+}
 
