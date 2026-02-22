@@ -1,6 +1,6 @@
 import './LeftBarTop.css'
 import Input from '../../../../assets/componets/Input/Input'
-import { useDashboard } from '../../../../context/DashboardContext'
+import { useDashboard, type StopType } from '../../../../context/DashboardContext'
 import React, { useEffect, useState } from 'react';
 
 interface Suggestion{
@@ -100,7 +100,10 @@ function LeftBarTop(){
         coord: {
           lat: s.lat,
           lng: s.lon
-        }
+        },
+        type:'stop' as StopType,
+        duration:15,
+        isEditing:false
       };
       // Return the new array to trigger the Sidebar & Map markers to update
       return [...prev, newLocation];

@@ -12,9 +12,9 @@
    MARKER STYLING (The Fix for drifting/floating)
    --------------------------------------------------------- */
 .MAP_MARKER {
-  position: absolute; /* Handled by Mapbox internals */
-  width: 32px !important;  /* MUST be fixed size */
-  height: 32px !important; /* MUST be fixed size */
+  position: absolute;
+  width: 32px !important;
+  height: 32px !important;
   background: #1A1C1E;
   border: 2px solid #00ff88;
   border-radius: 6px;
@@ -22,11 +22,43 @@
   align-items: center; 
   justify-content: center;
   cursor: grab;
-  /* CRITICAL: No transitions on transform! 
-     Mapbox uses transform to position, if we transition it, it "drifts". */
   margin: 0 !important;
   padding: 0 !important;
   box-sizing: border-box !important;
+  
+  /* Lift the marker up slightly so the "point" sits on the coordinate */
+  filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+  transform: translateY(-16px); 
+}
+
+/* The Pointed Tail */
+.MAP_MARKER::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; /* Positioned at the bottom of the square */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  /* Creates a triangle using borders */
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #00ff88; /* Matches the border color */
+}
+
+/* Internal "Shadow" triangle to make the tail look hollow/styled */
+.MAP_MARKER::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1A1C1E; /* Matches the background color */
+  z-index: 1;
 }
 
 /* The emoji icon inside the marker */
