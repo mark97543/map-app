@@ -1,91 +1,138 @@
-.MAP_CONTAINER {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Full screen map container */
+.MAP_CONTAINER { 
+  width: 100%; 
+  height: 100%; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  background: #0b0c0d; 
 }
 
+/* ---------------------------------------------------------
+   MARKER STYLING (The Fix for drifting/floating)
+   --------------------------------------------------------- */
 .MAP_MARKER {
-  background-color: var(--primary-main); /* Change to Sage/Green for visibility */
-  color: var(--bg-dark);
-  width: 24px;
-  height: 24px;
-  border-radius: 4px; 
-  display: flex;
-  align-items: center;
+  position: absolute; /* Handled by Mapbox internals */
+  width: 32px !important;  /* MUST be fixed size */
+  height: 32px !important; /* MUST be fixed size */
+  background: #1A1C1E;
+  border: 2px solid #00ff88;
+  border-radius: 6px;
+  display: flex; 
+  align-items: center; 
   justify-content: center;
-  font-weight: bold;
-  font-family: 'JetBrains Mono', monospace;
-  border: 1px solid var(--bg-dark);
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  
-  /* CRITICAL ADDITIONS BELOW */
   cursor: grab;
-  pointer-events: auto !important; /* Ensures the marker can be dragged */
-  z-index: 10;                     /* Keeps it above the route line */
-  user-select: none;               /* Prevents text highlighting while dragging */
-  transition: transform 0.2s, background-color 0.2s;
+  /* CRITICAL: No transitions on transform! 
+     Mapbox uses transform to position, if we transition it, it "drifts". */
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
-.MAP_MARKER:active {
-  cursor: grabbing;
-  transform: scale(1.1);
+/* The emoji icon inside the marker */
+.MARKER_ICON { 
+  font-size: 1.1rem; 
+  pointer-events: none; 
 }
 
-.MAP_MARKER:hover {
-  transform: scale(1.2);
-  background-color: #ffffff;
+/* The sequence number badge in the corner */
+.MARKER_NUMBER {
+  position: absolute; 
+  top: -10px; 
+  right: -10px;
+  background: #00ff88; 
+  color: #1A1C1E; 
+  font-size: 0.65rem; 
+  font-weight: 900;
+  width: 18px; 
+  height: 18px; 
+  border-radius: 50%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  border: 2px solid #1A1C1E;
 }
 
-/* The container for the button */
+/* Shaping point visual variant */
+.type-shaping { border-color: #4285F4; border-style: dashed; }
+.type-shaping .MARKER_NUMBER { background: #4285F4; color: white; }
+
+/* ---------------------------------------------------------
+   POPUP & HUD EDITOR
+   --------------------------------------------------------- */
+/* Ensure popups stay above markers */
+.mapboxgl-popup { z-index: 9999 !important; }
+
+/* Tactical look for the popup contents */
 .mapboxgl-popup-content {
-  background: var(--bg-surface) !important; /* Matches your sidebar background */
-  border: 1px solid var(--primary-main);    /* Your Sage Green border */
-  color: var(--text-main);
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-  /* font-family */
+  background: #1A1C1E !important;
+  border: 1px solid #00ff88;
+  padding: 0 !important; 
+  color: white;
   font-family: 'JetBrains Mono', monospace;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-/* The little arrow tip */
-.mapboxgl-popup-tip {
-  border-top-color: var(--primary-main) !important;
-  border-bottom-color: var(--primary-main) !important;
-  border-left-color: var(--primary-main) !important;
-  border-right-color: var(--primary-main) !important;
+.MARKER_HUD_EDITOR, .POPUP_MENU_CONTAINER { 
+  padding: 12px; 
+  min-width: 150px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
 }
 
-.TACTICAL_POPUP_BTN {
-  background: transparent;
-  color: var(--primary-main);
-  border: 1px solid var(--primary-main);
-  padding: 6px 14px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 2px;
+.HUD_SECTION label { 
+  font-size: 0.6rem; 
+  color: #888; 
+  display: block; 
+  margin-bottom: 4px; 
   text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.2s ease;
-  width: 100%;
 }
 
-.TACTICAL_POPUP_BTN:hover {
-  background: var(--primary-main);
-  color: var(--bg-dark); /* Contrast color */
-  box-shadow: 0 0 10px var(--primary-main);
+.TYPE_PICKER { 
+  display: flex; 
+  gap: 4px; 
+  justify-content: space-between; 
 }
 
-.mapboxgl-popup-close-button {
-  color: var(--text-main);
-  font-size: 1.2rem;
-  padding: 5px;
+.TYPE_PICKER button { 
+  background: #333; 
+  border: 1px solid transparent; 
+  padding: 5px; 
+  cursor: pointer; 
+  border-radius: 4px; 
+  font-size: 1rem; 
+  transition: background 0.2s;
 }
 
-.POPUP_MENU_CONTAINER {
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
+.TYPE_PICKER button:hover { background: #444; }
+.TYPE_PICKER button.active { border-color: #00ff88; background: #222; }
+
+.HUD_INPUT { 
+  background: #000; 
+  border: 1px solid #444; 
+  color: #00ff88; 
+  padding: 4px; 
+  width: 100%; 
+  box-sizing: border-box; 
+}
+
+.HUD_DELETE { 
+  background: #411; 
+  color: #f44; 
+  border: 1px solid #622; 
+  padding: 6px; 
+  cursor: pointer; 
+  font-size: 0.7rem; 
+  font-weight: bold;
+}
+
+.TACTICAL_POPUP_BTN { 
+  background: transparent; 
+  border: 1px solid #00ff88; 
+  color: #00ff88; 
+  padding: 8px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  text-transform: uppercase;
 }

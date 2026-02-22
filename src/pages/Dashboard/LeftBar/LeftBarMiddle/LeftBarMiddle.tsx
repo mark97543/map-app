@@ -101,9 +101,9 @@ function LeftBarMiddle(){
 
 export default LeftBarMiddle
 
-//TODO: Make gui for the Items
+
 //TODO: Add Break TIme
 //TODO: Add Budget
-//TODO: Add Arrival TIme
+//TODO: Add Arrival TIme (Calculated) 
 //TODO: Add Depart Time
 //TODO: Need to figure where to add notes (Maybe seperate screen)
