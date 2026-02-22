@@ -1,52 +1,35 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import { Map } from 'mapbox-gl';
-
-export type StopType = 'stop' | 'gas' | 'hotel' | 'food' | 'shaping';
-
-export interface Locations {
-  id: string;
-  name: string;
-  coord: { lng: number; lat: number };
-  isEditing?: boolean;
-  isNew?: boolean;
-  type: StopType;
-  duration: number;
-}
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getAllTrips } from '../services/api';
 
 interface DashboardContextType {
-  map: Map | null;
-  setMap: (map: Map | null) => void;
-  mapSelection: string;
-  setMapSelection: (n: string) => void;
-  mapCoords: { lng: number; lat: number };
-  setMapCoords: (coords: { lng: number; lat: number }) => void;
-  search: string;
-  setSearch: (n: string) => void;
-  locations: Locations[];
-  setLocations: React.Dispatch<React.SetStateAction<Locations[]>>;
-  routeData: any;
-  setRouteData: React.Dispatch<React.SetStateAction<any>>;
+  allTrips: any[] | null;
+  loading: boolean;
+  fetchInitialData: () => Promise<void>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
-export const DashboardProvider = ({ children }: { children: ReactNode }) => {
-  const [map, setMap] = useState<Map | null>(null);
-  const [mapSelection, setMapSelection] = useState('High Contrast');
-  const [mapCoords, setMapCoords] = useState({ lng: -98.57, lat: 39.82 });
-  const [search, setSearch] = useState('');
-  const [routeData, setRouteData] = useState<any>(null);
+export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [allTrips, setAllTrip] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const [locations, setLocations] = useState<Locations[]>([
-    { id: '1', name: 'Sector Alpha', coord: { lng: -73.9352, lat: 40.7306 }, type: 'stop', duration: 0 },
-    { id: '2', name: 'Supply Depot', coord: { lng: -74.0060, lat: 40.7128 }, type: 'gas', duration: 15 }
-  ]);
+  const fetchInitialData = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllTrips();
+      console.log("Fetched All Trips:", data);
+      setAllTrip(data);
+    } catch (error) {
+      console.error("Error loading gallery:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+
+  // Fix: We must return the Provider and pass the values here!
   return (
-    <DashboardContext.Provider value={{
-      map, setMap, mapSelection, setMapSelection, mapCoords, setMapCoords,
-      search, setSearch, locations, setLocations, routeData, setRouteData
-    }}>
+    <DashboardContext.Provider value={{ allTrips, loading, fetchInitialData }}>
       {children}
     </DashboardContext.Provider>
   );
@@ -54,6 +37,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
-  if (!context) throw new Error("useDashboard must be used within DashboardProvider");
+  if (context === undefined) {
+    throw new Error('useDashboard must be used within a DashboardProvider');
+  }
   return context;
 };

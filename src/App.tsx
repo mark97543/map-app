@@ -4,9 +4,9 @@ import { useAuth } from './context/AuthContext'
 import { DashboardProvider } from './context/DashboardContext'
 // Page imports
 import Welcome from './pages/Welcome/Welcome' 
-import Dashboard from './pages/Dashboard/Dashboard'
 import NotFound from './pages/NotFound/NotFound'
 import Header from './assets/componets/Header/Header'
+import ItinSelect from './pages/ItinSelect/ItinSlect'
 
 function App() {
   const { user, loading } = useAuth();
@@ -24,7 +24,7 @@ function App() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <ItinSelect />
               </ProtectedRoute>
             } 
           />
