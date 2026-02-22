@@ -7,20 +7,30 @@
 }
 
 .MAP_MARKER {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
+  background-color: var(--primary-main); /* Change to Sage/Green for visibility */
+  color: var(--bg-dark);
   width: 24px;
   height: 24px;
-  border-radius: 4px; /* Square tactical look */
+  border-radius: 4px; 
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-family: monospace;
-  border: 2px solid var(--bg-dark);
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid var(--bg-dark);
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  cursor: pointer;
-  transition: transform 0.2s;
+  
+  /* CRITICAL ADDITIONS BELOW */
+  cursor: grab;
+  pointer-events: auto !important; /* Ensures the marker can be dragged */
+  z-index: 10;                     /* Keeps it above the route line */
+  user-select: none;               /* Prevents text highlighting while dragging */
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.MAP_MARKER:active {
+  cursor: grabbing;
+  transform: scale(1.1);
 }
 
 .MAP_MARKER:hover {
