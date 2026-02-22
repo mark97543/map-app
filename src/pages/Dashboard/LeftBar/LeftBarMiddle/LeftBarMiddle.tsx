@@ -106,7 +106,4 @@ export default LeftBarMiddle
 //TODO: Add Budget
 //TODO: Add Arrival TIme
 //TODO: Add Depart Time
-//TODO: Add distance, time between stops 
 //TODO: Need to figure where to add notes (Maybe seperate screen)
-//TODO: Right Click to go to google maps. 
-//TODO: Need to make markers Draggable so we could move on fly

@@ -104,10 +104,15 @@ function Map() {
     m.on('contextmenu', (e) => {
       if (activePopup.current) activePopup.current.remove();
       const { lng, lat } = e.lngLat;
-      const btn = document.createElement('button');
-      btn.innerText = 'Add Waypoint';
-      btn.className = 'TACTICAL_POPUP_BTN';
-      btn.onclick = () => {
+      
+      const container = document.createElement('div');
+      container.className = 'POPUP_MENU_CONTAINER';
+
+      // --- Button 1: Add Waypoint ---
+      const addBtn = document.createElement('button');
+      addBtn.innerText = 'Add Waypoint';
+      addBtn.className = 'TACTICAL_POPUP_BTN';
+      addBtn.onclick = () => {
         setLocations((prev) => [
           ...prev, 
           { id: `manual-${Date.now()}`, name: `Waypoint ${prev.length + 1}`, coord: { lat, lng }, isEditing: false }
@@ -115,10 +120,28 @@ function Map() {
         popup.remove();
       };
 
+      // --- Button 2: Open in Google Maps ---
+      const gMapsBtn = document.createElement('button');
+      gMapsBtn.innerText = 'Google Maps';
+      gMapsBtn.className = 'TACTICAL_POPUP_BTN';
+      gMapsBtn.style.marginTop = '8px';
+      gMapsBtn.style.borderColor = '#4285F4'; // Google Blue
+
+      gMapsBtn.onclick = () => {
+        // Use backticks (`) and ${variable} for string interpolation
+        const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        window.open(url, '_blank');
+        popup.remove();
+      };
+
+      container.appendChild(addBtn);
+      container.appendChild(gMapsBtn);
+
       const popup = new mapboxgl.Popup({ closeButton: false })
         .setLngLat([lng, lat])
-        .setDOMContent(btn)
+        .setDOMContent(container)
         .addTo(m);
+        
       activePopup.current = popup;
     });
 

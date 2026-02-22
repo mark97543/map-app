@@ -83,3 +83,9 @@
   font-size: 1.2rem;
   padding: 5px;
 }
+
+.POPUP_MENU_CONTAINER {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
