@@ -1,3 +1,4 @@
+/* --- CONTAINER & SCROLLBAR --- */
 .LEFTBAR_MIDDLE_WRAPPER {
   display: flex;
   flex-direction: column;
@@ -9,30 +10,27 @@
   overflow-x: hidden;
 }
 
-/* Width of the scrollbar */
 .LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar {
   width: 6px;
 }
 
-/* The Track (background) */
 .LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-track {
-  background: var(--bg-surface); 
+  background: var(--bg-surface);
   border-radius: 10px;
 }
 
-/* The Thumb (the moving part) */
 .LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-thumb {
   background: var(--primary-main);
   border-radius: 10px;
-  border: 1px solid var(--bg-surface); /* Creates a small gap effect */
+  border: 1px solid var(--bg-surface);
 }
 
-/* Hover effect on the thumb */
 .LEFTBAR_MIDDLE_WRAPPER::-webkit-scrollbar-thumb:hover {
-  background: #7aa392; /* Slightly brighter version of your Sage Green */
+  background: #7aa392;
   cursor: pointer;
 }
 
+/* --- LOCATION CARD (STANDARD) --- */
 .LEFTBAR_LOCATION_DIV {
   display: grid;
   grid-template-columns: 45px 1fr 35px;
@@ -41,6 +39,7 @@
   padding: var(--space-sm);
   border-radius: var(--radius-sm);
   align-items: center;
+  transition: background-color 0.2s ease;
 }
 
 .INDEX_NUMBER {
@@ -51,14 +50,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* font-family */
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;
   font-size: 1rem;
   color: var(--bg-dark);
   background: var(--primary-main);
   border-radius: 4px;
-  justify-self: start;
   cursor: grab;
   touch-action: none;
 }
@@ -71,17 +68,15 @@
   margin: 0;
   grid-column: 2;
   text-align: center;
-  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .LEFTBAR_LOCATION_DIV p:nth-of-type(1) {
   grid-row: 1;
   border-bottom: 1px solid var(--bg-surface);
   padding-bottom: 2px;
-  /* margin: 0 var(--space-sm); */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-weight: bold;
   margin-right: var(--space-sm);
 }
@@ -91,7 +86,6 @@
   padding-top: 2px;
   font-size: 0.85rem;
   opacity: 0.9;
-  /* font-family */
   font-family: 'JetBrains Mono', monospace;
 }
 
@@ -102,10 +96,8 @@
   border: none;
   font-size: 1.5rem;
   color: var(--text-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  transition: transform 0.1s ease;
 }
 
 .LEFTBAR_DELETE:active {
@@ -113,12 +105,12 @@
   filter: brightness(0.8);
 }
 
+/* --- TRAVEL CONNECTOR & ADD BUTTON --- */
 .TRAVEL_CONNECTOR {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Negative margin helps the line feel connected to the cards */
-  margin: -5px 0; 
+  margin: -5px 0;
 }
 
 .CONNECTOR_LINE {
@@ -132,18 +124,13 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  background: rgba(92, 131, 116, 0.1); /* Subtle tint of your sage green */
+  background: rgba(92, 131, 116, 0.1);
   border: 1px dashed var(--primary-main);
   padding: 4px 12px;
   border-radius: 20px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   color: var(--primary-main);
-}
-
-.STATS_ROW {
-  display: flex;
-  gap: 10px;
 }
 
 .ADD_INTERIM_BTN {
@@ -154,14 +141,86 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-weight: bold;
   transition: transform 0.2s ease;
+  margin-left: var(--space-sm);
 }
 
 .ADD_INTERIM_BTN:hover {
   transform: scale(1.2);
   filter: brightness(1.2);
+}
+
+/* --- EDITING STATE & INLINE SEARCH --- */
+.LEFTBAR_LOCATION_DIV.EDITING {
+  display: block; /* Break grid layout for search bar */
+  padding: 0;
+  border: 1px solid var(--primary-main);
+  background: var(--bg-surface);
+  overflow: visible; /* Ensure suggestions aren't clipped */
+}
+
+.INLINE_SEARCH_CONTAINER {
+  position: relative;
+  width: 100%;
+}
+
+.INLINE_SEARCH input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--primary-main);
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.INLINE_SEARCH input::placeholder {
+  color: var(--primary-main);
+  opacity: 0.5;
+}
+
+/* --- SEARCH SUGGESTIONS --- */
+.SEARCH_SUGGESTIONS {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--primary-main);
+  border-top: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 999;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.SEARCH_SUGGESTIONS li {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.SEARCH_SUGGESTIONS li:hover {
+  background: rgba(92, 131, 116, 0.2);
+}
+
+.SUGGEST_MAIN {
+  color: var(--primary-main);
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.SUGGEST_SUB {
+  color: var(--text-main);
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 2px;
 }

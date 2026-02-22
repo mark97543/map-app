@@ -1,21 +1,36 @@
 import './LeftBarMiddle.css'
-import { DashboardProvider, useDashboard } from '../../../../context/DashboardContext'
+import { useDashboard } from '../../../../context/DashboardContext'
 import { DndContext, closestCenter,type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableLocation from './Components/SortableLocation';
 import React from 'react';
 
 function LeftBarMiddle(){
-  const {locations, setLocations, routeData} =useDashboard();
+  const {locations, setLocations, routeData} = useDashboard();
 
   const DeleteItem = (id:string) =>{
     setLocations((prevLocations)=>prevLocations.filter(location=>location.id!== id));
     //TODO: When working with DB this should trigger a save
   }
 
+  const insertMidpoint = (index:number)=>{
+    const newId = `mid-${Date.now()}`;
+    const newWaypoint = {
+      id: newId,
+      name: '',
+      coord: {lat: 0, lng: 0},
+      isEditing: true
+    }
+
+    setLocations((prev)=>{
+      const updated = [...prev];
+      updated.splice(index + 1, 0, newWaypoint);
+      return updated;
+    })
+  }
+
   const handleDragEnd = (event:DragEndEvent)=>{
     const {active, over}=event;
-
     if(over && active.id !== over.id){
       setLocations((items)=>{
         const oldIndex = items.findIndex((i)=> i.id === active.id);
@@ -23,27 +38,15 @@ function LeftBarMiddle(){
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-
     //TODO: Need to have a function to save to DB once drag event is completed. 
   };
 
   const formatDuration = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.round((totalSeconds % 3600) / 60);
-
-    // If it's 1h 60m due to rounding, roll it over
-    if (minutes === 60) {
-      return `${hours + 1}h 00m`;
-    }
-
-    // Format minutes to always be two digits (e.g., 05m instead of 5m)
+    if (minutes === 60) return `${hours + 1}h 00m`;
     const paddedMins = minutes.toString().padStart(2, '0');
-
-    if (hours > 0) {
-      return `${hours}h ${paddedMins}m`;
-    }
-    
-    return `${minutes}m`;
+    return hours > 0 ? `${hours}h ${paddedMins}m` : `${minutes}m`;
   };
 
   return(
@@ -52,33 +55,28 @@ function LeftBarMiddle(){
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={locations} strategy={verticalListSortingStrategy}>
             {locations.map((location, index) => (
-              
               <React.Fragment key={location.id}>
-                {/*Main waypoint card */}
                 <SortableLocation 
-                  key={location.id} 
                   location={location} 
                   onDelete={DeleteItem}
                   index={index} 
                 />
-                {/*Connector only if not the last item */}
-                {index < locations.length -1 &&(
+                {index < locations.length - 1 && (
                   <div className='TRAVEL_CONNECTOR'>
                     <div className='CONNECTOR_LINE'/>
                     <div className='INTERIM_ASSESMENT'>
                       <div className='STATS_ROW'>
-                        {/* Guard: Only access duration/distance if the specific leg exists */}
-                        {routeData?.legs && routeData.legs[index] ? (
+                        {routeData?.legs && routeData.legs[index] && !locations[index].isEditing && !locations[index+1].isEditing ? (
                           <span>
                             {formatDuration(routeData.legs[index].duration)} / {(routeData.legs[index].distance / 1609.34).toFixed(1)}mi
                           </span>
                         ) : (
-                          <span className="STATS_LOADING">Calculating...</span>
+                          <span className="STATS_LOADING">---</span>
                         )}
                         <button 
                           className='ADD_INTERIM_BTN'
                           title="Add Interim Assessment Point"
-                          onClick={() => console.log("Insert midpoint logic here")} 
+                          onClick={() => insertMidpoint(index)} 
                         >
                           +
                         </button>
@@ -109,7 +107,6 @@ export default LeftBarMiddle
 //TODO: Add Arrival TIme
 //TODO: Add Depart Time
 //TODO: Add distance, time between stops 
-//TODO: Add more Data
 //TODO: Need to figure where to add notes (Maybe seperate screen)
-//TODO: Need to Add Midpoint Logic
 //TODO: Right Click to go to google maps. 
+//TODO: Need to make markers Draggable so we could move on fly

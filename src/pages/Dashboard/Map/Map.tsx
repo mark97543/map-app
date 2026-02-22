@@ -12,16 +12,27 @@ function Map() {
   const { locations, setMap, setMapCoords, setLocations, setRouteData, mapSelection } = useDashboard();
   const activePopup = useRef<mapboxgl.Popup | null>(null);
 
-  // --- 1. EXTRACT ROUTE LOGIC ---
-  // We move the "drawing" logic into a function so both the Effect AND the Style Listener can call it.
+  // ---------------------------------------------------------
+  // 1. ROUTE DRAWING LOGIC (Extracted for re-use)
+  // ---------------------------------------------------------
   const drawRoute = useCallback(async () => {
-    if (!map.current || locations.length < 2) return;
+    if (!map.current) return;
 
     const source = map.current.getSource('route') as mapboxgl.GeoJSONSource;
-    if (!source) return; // Still not ready
+    
+    // Reset line if not enough points
+    if (locations.length < 2) {
+      if (source) {
+        source.setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } });
+      }
+      setRouteData(null);
+      return;
+    }
+
+    if (!source) return;
 
     const chunks = [];
-    const chunkSize = 25;
+    const chunkSize = 25; 
     for (let i = 0; i < locations.length; i += (chunkSize - 1)) {
       const chunk = locations.slice(i, i + chunkSize);
       if (chunk.length > 1) chunks.push(chunk);
@@ -58,7 +69,9 @@ function Map() {
     }
   }, [locations, setRouteData]);
 
-  // --- 2. INITIALIZATION & STYLE LISTENERS ---
+  // ---------------------------------------------------------
+  // 2. INITIALIZATION & STYLE SWAP SAFETY
+  // ---------------------------------------------------------
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -73,8 +86,13 @@ function Map() {
 
     map.current = m;
 
+    m.on('move', () => {
+      const center = m.getCenter();
+      setMapCoords({ lng: center.lng, lat: center.lat });
+    });
+
     m.on('style.load', () => {
-      // Re-add Source
+      // Re-add Route Source
       if (!m.getSource('route')) {
         m.addSource('route', {
           type: 'geojson',
@@ -82,7 +100,7 @@ function Map() {
         });
       }
 
-      // Re-add Layer
+      // Re-add Route Layer (Neon Green)
       if (!m.getLayer('route-line')) {
         m.addLayer({
           id: 'route-line',
@@ -90,41 +108,98 @@ function Map() {
           source: 'route',
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
-            'line-color': '#ff0000',
-            'line-width': 6,
+            'line-color': '#00ff88',
+            'line-width': 8,
             'line-opacity': 1,
-            'line-blur': 0.5,
-            'line-dasharray':[.5,2]
+            'line-blur': 0.3
           }
         });
       }
-
-      // TACTICAL FIX: Immediately try to draw the route as soon as the style loads
+      
+      // Re-trigger the drawing of the existing route onto the new style
       drawRoute();
     });
 
     m.on('load', () => setMap(m));
+    m.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // cleanup... (rest of your existing init code)
-    return () => { if (map.current) { map.current.remove(); map.current = null; setMap(null); } };
-  }, [drawRoute, setMap]); // Added drawRoute to deps
+    // Context Menu: Right-Click to add Waypoints
+    m.on('contextmenu', (e) => {
+      if (activePopup.current) activePopup.current.remove();
+      const { lng, lat } = e.lngLat;
+      const btn = document.createElement('button');
+      btn.innerText = 'Add Waypoint';
+      btn.className = 'TACTICAL_POPUP_BTN';
+      btn.onclick = () => {
+        setLocations((prev) => [
+          ...prev, 
+          { id: `manual-${Date.now()}`, name: `Waypoint ${prev.length + 1}`, coord: { lat, lng } }
+        ]);
+        popup.remove();
+      };
 
-  // --- 3. DIRECTIONS EFFECT ---
+      const popup = new mapboxgl.Popup({ closeButton: false })
+        .setLngLat([lng, lat])
+        .setDOMContent(btn)
+        .addTo(m);
+      activePopup.current = popup;
+    });
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+        setMap(null);
+      }
+    };
+  }, [drawRoute, setMap, setMapCoords, setLocations]);
+
+  // ---------------------------------------------------------
+  // 3. AUTO-FIT CAMERA (Refined for smoothness)
+  // ---------------------------------------------------------
   useEffect(() => {
-    drawRoute();
-  }, [locations, drawRoute, mapSelection]);
+    // 1. Guard: Don't move the camera if we have 0 or only 1 point 
+    // (unless you want it to zoom into that single point)
+    if (!map.current || !locations || locations.length === 0) return;
 
-  // --- 4. MARKERS EFFECT --- (Your existing marker code)
+    const bounds = new mapboxgl.LngLatBounds();
+    locations.forEach((loc) => bounds.extend([loc.coord.lng, loc.coord.lat]));
+
+    map.current.fitBounds(bounds, {
+      padding: { top: 100, bottom: 100, left: 450, right: 100 },
+      maxZoom: 14,
+      duration: 2000,    // Increased duration for a slower, "satellite glide" feel
+      essential: true,
+      curve: 1.42,       // Controls the curvature of the flight path
+      speed: 0.8,        // Slower speed makes it less "jarring" when points are removed
+      linear: false      // Use an exponential zoom curve for a more natural feel
+    });
+  }, [locations]);
+
+  // ---------------------------------------------------------
+  // 4. MARKERS & ROUTE UPDATER
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!map.current || !locations) return;
     const currentMarkers: mapboxgl.Marker[] = [];
+
     locations.forEach((loc, index) => {
-      const el = document.createElement('div'); el.className = 'MAP_MARKER'; el.innerText = (index + 1).toString();
-      const marker = new mapboxgl.Marker(el).setLngLat([loc.coord.lng, loc.coord.lat]).addTo(map.current!);
+      const el = document.createElement('div');
+      el.className = 'MAP_MARKER';
+      el.innerText = (index + 1).toString();
+
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([loc.coord.lng, loc.coord.lat])
+        .addTo(map.current!);
       currentMarkers.push(marker);
     });
+
     return () => currentMarkers.forEach(m => m.remove());
   }, [locations]);
+
+  useEffect(() => {
+    drawRoute();
+  }, [locations, drawRoute, mapSelection]);
 
   return <div ref={mapContainer} className='MAP_CONTAINER' />;
 }

@@ -2,10 +2,12 @@ import React, { createContext, useContext, useState, type ReactNode } from 'reac
 import { Map } from 'mapbox-gl';
 //Define what datas lives in here 
 
-interface Locations {
+export interface Locations {
   id:string;
   name:string;
   coord:{ lng: number; lat: number };
+  isEditing?:boolean;
+  isNew?:boolean;
 }
 
 interface DashboardContextType{
