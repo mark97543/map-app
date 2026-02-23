@@ -55,12 +55,21 @@
 .planned_pill,
 .complete_pill,
 .archived_pill{
-  border:1px solid var(--primary-muted);
-  border-radius: 30px;
-  padding: var(--space-xs);
-  width:95px;
+  /* This forces the banner to ignore the parent's padding */
+  width: calc(100% + (var(--space-sm) * 2)); 
+  margin-left: calc(var(--space-sm) * -1);
+  
+  border-top: 1px solid var(--primary-muted);
+  border-bottom: 1px solid var(--primary-muted);
+  padding: var(--space-xs) 0;
   text-align: center;
-  margin-top: var(--space-xs);
+  margin-top: var(--space-md);
+  
+  /* Adds a little "ribbon" weight */
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
 }
 
 .draft_pill{
@@ -79,4 +88,33 @@
 
 .complete_pill{
   background: var(--warning-gold);
+}
+
+.ItinSelect_Metrics{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  margin-top: var(--space-xs);
+  text-align: center;
+  font-size: var(--font-lg);
+}
+
+.ItinSelect_Met_Divider{
+  border-left: 1px solid var(--text-main);
+  border-right: 1px solid var(--text-main);
+}
+
+.ItinSelect_TripSummary{
+  text-align: center;
+  /* The Truncation Magic */
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Limits text to 1 line */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Layout & Centering */
+  width: 100%;
+  margin: var(--space-sm) 0;
+  text-align: center; /* Keeps the text centered within the truncation */
+  font-size: var(--font-lg);
 }

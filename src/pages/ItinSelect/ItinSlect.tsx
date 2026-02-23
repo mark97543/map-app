@@ -40,13 +40,17 @@ function ItinSelect(){
           allTrips.map((trip)=>(
             <div key={trip.id} className='ItinSelect_TripCard'>
               <h2>{trip.trip_id}:{trip.title}</h2>
-              <div>
-                {statusPill(trip.status, trip.trip_rating)}
+              {statusPill(trip.status, trip.trip_rating)}
+              <div className='ItinSelect_Metrics'>
+                <p>{trip.total_distance? trip.total_distance:"0"} <b>mi</b></p>
+                <p className='ItinSelect_Met_Divider'>{timeConverter(trip.total_time)}</p>
+                <p><b>$</b> {trip.total_budget? Number(trip.total_budget).toFixed(2):"0.00"}</p>
               </div>
+              <p className='ItinSelect_TripSummary'>{trip.trip_summary}</p>
             </div>
           ))
         ):(
-          <p>No trips found. Time to hit the road!</p>
+          <p >No trips found. Time to hit the road!</p>
         )}
       </div>
 
@@ -72,3 +76,16 @@ const statusPill=(status:string, rating:number)=>{
   }
 }
 
+const timeConverter = (time: number) => {
+  // If time is 0 or null, return a fallback
+  if (!time) return "0h 0m";
+
+  const hours = Math.floor(time / 60);
+  const minutes = time % 60; // Using the "Modulo" (%) operator is a cleaner way to get the remainder!
+
+  return (
+    <>
+      {hours} <b>h</b> {minutes} <b>m</b>
+    </>
+  );
+};
