@@ -8,7 +8,10 @@
   grid-template-columns: 150px auto 200px;
   align-items: center;
   padding: var(--space-sm);
-  border-bottom: 1px solid var(--primary-muted)
+  border-bottom: 1px solid var(--primary-muted);
+  position:sticky;
+  top:0;
+  z-index: 1000;
 }
 
 .HEADER_Logout{
@@ -27,4 +30,6 @@
   font-weight: 700;
   font-style: normal;
   font-size: 3rem;
+  cursor: pointer;
 }
+

@@ -7,6 +7,7 @@ import Welcome from './pages/Welcome/Welcome'
 import NotFound from './pages/NotFound/NotFound'
 import Header from './assets/componets/Header/Header'
 import ItinSelect from './pages/ItinSelect/ItinSlect'
+import ItinEdit from './pages/ItinEdit/ItinEdit'
 
 function App() {
   const { user, loading } = useAuth();
@@ -28,6 +29,15 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route
+            path='/edit/:slug'
+            element={
+              <ProtectedRoute>
+                <ItinEdit/>
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardProvider>

@@ -1,10 +1,12 @@
 import './Header.css'
 import Button from '../Button/Button'
 import { useAuth } from '../../../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 
 function Header() {
-  const {logout, setUser}=useAuth()
+  const {logout, setUser}=useAuth();
+  const navigate=useNavigate();
 
   const LogoutUser=async ()=>{
     try{
@@ -19,10 +21,14 @@ function Header() {
     }
   }
 
+  const LinkToDashboard = () =>{
+    navigate('/dashboard')
+  }
+
   return (
     <div className='HEADER_WRAPPER'>
-      <div className='HEADER_LOGO'>
-        <h1>Iter Viae</h1>
+      <div className='HEADER_LOGO' >
+        <h1 onClick={LinkToDashboard}>Iter Viae</h1>
       </div>
 
       <div className='HEADER_LINKS'>

@@ -5,6 +5,8 @@ interface DashboardContextType {
   allTrips: any[] | null;
   loading: boolean;
   fetchInitialData: () => Promise<void>;
+  refresh:number;
+  triggerRefresh:() => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -12,6 +14,9 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [allTrips, setAllTrip] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh]=useState(0);
+
+  const triggerRefresh = () => setRefresh(prev => prev + 1);
 
   const fetchInitialData = async () => {
     setLoading(true);
@@ -29,7 +34,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Fix: We must return the Provider and pass the values here!
   return (
-    <DashboardContext.Provider value={{ allTrips, loading, fetchInitialData }}>
+    <DashboardContext.Provider value={{ allTrips, loading, fetchInitialData, refresh, triggerRefresh }}>
       {children}
     </DashboardContext.Provider>
   );

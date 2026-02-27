@@ -1,0 +1,53 @@
+.EDIT_wrapper{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding: var(--space-md);
+}
+
+.Slug_Title_Block{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.Slug_Title_Block h1{
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}
+
+.Title_inputs{
+  display: flex;
+  flex-direction: row;
+}
+
+.Title_inputs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px; /* Space around the colon */
+}
+
+/* Target the input inside your component */
+.Title_inputs input {
+  font-size: 2rem; /* Match your H1 font size exactly */
+  font-weight: 700; /* Match H1 boldness */
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px dashed var(--primary-muted); /* Visual cue it's editable */
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.Title_inputs input:focus {
+  border-bottom: 2px solid var(--success-teal);
+}

@@ -5,12 +5,26 @@
 }
 
 .ItinSelect_TopRow{
+  display: grid;
+  /* Column 1: Title, Column 2: Search (fixed width), Column 3: Button */
+  grid-template-columns: 1fr auto 1fr; 
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+}
+
+.Search_Container {
+  /* This ensures the middle column stays exactly in the center */
   display: flex;
-  flex-direction: row;
+  flex-direction: column; /* Stack the label/toggle if you add one later */
+  align-items: center;
+  width:100%;
 }
 
 .ItinSelect_TopRow button{
-  margin-left: auto;
+  justify-self: end; 
+  margin-left: 0; /* Clear the previous margin-left: auto */
   font-size: var(--font-lg);
 }
 
@@ -117,4 +131,46 @@
   margin: var(--space-sm) 0;
   text-align: center; /* Keeps the text centered within the truncation */
   font-size: var(--font-lg);
+}
+
+.ItinSelect_Start_Date{
+  font-size: var(--font-lg);
+  text-align: center;
+  background: var(--bg-dark);
+  width: calc(100% + (var(--space-sm) * 2)); 
+  margin-left: calc(var(--space-sm) * -1);
+  
+  border-top: 1px solid var(--primary-muted);
+  border-bottom: 1px solid var(--primary-muted);
+  padding: var(--space-xs) 0;
+  text-align: center;
+  margin-top: var(0);
+}
+
+
+
+/* Tablet and Mobile Stack */
+@media (max-width: 750px) {
+  .ItinSelect_TopRow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .Search_Container {
+    width: 100%; /* Take up full width when stacked */
+    max-width: 100%;
+  }
+
+  .ItinSelect_TopRow button {
+    justify-self: center; /* Center the button in the stack */
+    width: 100%;          /* Optional: make button full width on mobile */
+    margin-left: 0;
+  }
+  
+  /* Optional: Adjust title size for smaller screens */
+  .ItinSelect_TopRow h1 {
+    font-size: var(--font-xl);
+  }
 }
