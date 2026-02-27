@@ -4,11 +4,13 @@ import { useDashboard } from '../../context/DashboardContext'
 import { useEffect, useState } from 'react'
 import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
+import TripSummary from './Parts/TripSummary'
 
-interface Trip{
+export interface Trip{
   id:number;
   title:string;
   trip_id:string;
+  trip_summary:string;
 }
 
 const ItinEdit = () =>{
@@ -17,10 +19,12 @@ const ItinEdit = () =>{
   const {triggerRefresh}=useDashboard();
   const [segments, setSegments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [titleEdit, setTitleEdit]=useState(false)
+  const [titleEdit, setTitleEdit]=useState(false);
+  const [summaryEdit, setSummaryEdit]=useState(false);
 
   const [tempId, setTempId] = useState(tripDetails?.trip_id || '');
   const [tempTitle, setTempTitle] = useState(tripDetails?.title || '');
+  const [tempSummary, setTempSummary]=useState(tripDetails?.trip_summary || '');
 
 
   useEffect(()=>{
@@ -38,6 +42,7 @@ const ItinEdit = () =>{
           // 🚀 Set temp states here!
           setTempId(data.trip_id);
           setTempTitle(data.title);
+          setTempSummary(data.trip_summary);
         }
       } catch (err) {
         console.error("Failed to load full trip details:", err);
@@ -48,18 +53,18 @@ const ItinEdit = () =>{
     fetchFullTrip();
   },[slug])
 
-  
-
   const handleAutoSave = async () => {
     setTitleEdit(false);
+    setSummaryEdit(false);
     if (!tripDetails?.id) return;
 
-    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title) {
+    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary) {
       try {
         // 1. Send the update to Directus
         const updated = await updateTrip(tripDetails.id, { 
           trip_id: tempId, 
-          title: tempTitle 
+          title: tempTitle,
+          trip_summary:tempSummary
         });
 
         if (updated) {
@@ -70,6 +75,7 @@ const ItinEdit = () =>{
           // This prevents the next edit from using stale local values
           setTempId(updated.trip_id);
           setTempTitle(updated.title);
+          setTempSummary(updated.trip_summary)
           
           console.log("✅ Sync successful with server data.");
           triggerRefresh();
@@ -101,6 +107,15 @@ const ItinEdit = () =>{
         tempTitle={tempTitle}
         handleAutoSave={handleAutoSave}
         setTitleEdit={setTitleEdit}
+      />
+
+      <TripSummary
+        tripDetails={tripDetails}
+        summaryEdit={summaryEdit}
+        setSummaryEdit={setSummaryEdit}
+        handleAutoSave={handleAutoSave}
+        tempSummary={tempSummary}
+        setTempSummary={setTempSummary}
       />
 
 

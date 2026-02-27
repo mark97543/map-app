@@ -1,11 +1,8 @@
+import { type Trip } from "../ItinEdit";
 
 interface SlugTitleProps {
   titleEdit: boolean;
-  tripDetails: {
-    id: number;
-    title: string;
-    trip_id: string;
-  };
+  tripDetails:Trip;
   tempId: string;
   setTempId: (val: string) => void;
   tempTitle: string;
