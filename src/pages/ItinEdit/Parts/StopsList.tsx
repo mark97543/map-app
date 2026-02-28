@@ -4,6 +4,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { StopItem } from "./StopItem";
 import { type Stop } from "../ItinEdit";
 import {updateStopsBatch} from '../../../services/api'
+import { type UniqueIdentifier } from "@dnd-kit/core";
 
 interface StopsListProps {
   stops: Stop[]; 
@@ -12,17 +13,27 @@ interface StopsListProps {
 }
 
 const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
-  //Testing Variables
 
+  const handleUpdateStopName = (id: UniqueIdentifier, newName: string) => {
+    setStops((prevStops) => {
+      const updated = prevStops.map((stop) => 
+        stop.id === id ? { ...stop, name: newName } : stop
+      );
+      
 
-  //console.log(stops)
+      triggerSortSave(updated); 
+      
+      return updated;
+    });
+  };
 
   const triggerSortSave = async (updatedStops: Stop[]) => {
     try {
       // We only need to send the ID and the new Sort index to Directus
       const payload = updatedStops.map(s => ({
         id: s.id,
-        sort: s.sort
+        sort: s.sort,
+        name:s.name
       }));
 
       // Example API call (Adjust based on your specific 'updateTrip' or 'updateStops' service)
@@ -60,7 +71,7 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
   }
   
   return(
-    <div >
+    <div className="StopsList_wrapper">
       <h2>Route Order</h2>
       
       {/* 1. The Provider: Catches the drag events */}
@@ -71,7 +82,7 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         {/* 2. The Strategy: Tells the list how to behave (vertical) */}
         <SortableContext items={stops.map(s => s.id)} strategy={verticalListSortingStrategy}>
           {stops.map((stop) => (
-            <StopItem key={stop.id} id={stop.id} label={stop.name} />
+            <StopItem key={stop.id} id={stop.id} label={stop.name} onSave={handleUpdateStopName}/>
           ))}
         </SortableContext>
       </DndContext>

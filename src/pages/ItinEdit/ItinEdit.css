@@ -51,7 +51,8 @@
    3. SHARED SECTION CONTAINERS (Summary & Notes)
    ========================================================================== */
 .TRIPSUMMARY_wrapper,
-.EDITNOTES_wrapper {
+.EDITNOTES_wrapper,
+.StopItems_wrapper{
   width: 100%;
   background-color: var(--bg-surface);
   padding: var(--space-md);
@@ -108,8 +109,8 @@
 }
 
 /* ==========================================================================
-   5. TRIP NOTES DISPLAY & QUILL OVERRIDES
-   ========================================================================== */
+5. TRIP NOTES DISPLAY & QUILL OVERRIDES
+========================================================================== */
 .trip-notes-display {
   text-align: left;
   line-height: 1.8;
@@ -161,6 +162,11 @@
 6. DRAGGABLE CONTAINERS (Stops.tsx)
 ========================================================================== */
 
+.StopsList_wrapper{
+  width: 100%;
+  max-width: 1200px;
+}
+
 .StopItems_wrapper {
   padding: 0;
   display: grid;
@@ -172,9 +178,10 @@
   border: 1px solid var(--primary-muted);
   border-radius: var(--radius-md);
   align-items: center;
-  gap: var(--space-md);
-  cursor: grab;
+  gap: 0;
+  /* cursor: grab; */
   transition: border-color var(--transition-smooth), background-color var(--transition-smooth);
+  min-height: 5rem; /*Only for Debugging */
 }
 
 .StopItems_wrapper:hover {
@@ -182,9 +189,9 @@
   background-color: rgba(255, 255, 255, 0.02);
 }
 
-.StopItems_wrapper:active {
+/* .StopItems_wrapper:active {
   cursor: grabbing;
-}
+} */
 
 /* Optional: style for when the item is being dragged */
 .StopItems_dragging {
@@ -196,7 +203,6 @@
 
 /*Column 1 Rows 1-4 (Left Grabber) */
 .StopItem_grabber_div{
-  cursor: grab;
   grid-column: 1/2;
   grid-row: 1/5;
   background-color: var(--text-main);
@@ -206,7 +212,7 @@
   justify-content: center;
 }
 
-.StopItem_grabber_div:active {
+.StopItem_grabber:active {
   cursor: grabbing;
 }
 
@@ -214,9 +220,46 @@
   color: var(--bg-surface);
   margin-left: var(--space-xs);
   margin-right: var(--space-xs);
-
+  cursor: grab;
 } 
 
-/*Column 2 (Icon and Stop Type) */
+/*------------Top Title Row------------  */
+.StopItem_titleRow{
+  grid-column: 2/5;
+  border-bottom: 1px solid var(--primary-muted);
+  background-color: var(--bg-dark);
+  padding: var(--space-xs);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-height: 45px;
+  font-size: var(--font-xl);
+}
 
+.StopItem_EditButton,
+.StopItem_Cancel{
+  margin-top: 0;
+  height: 80%!important;
+  margin-left: auto!important;
+  margin-right: var(--space-sm)!important;
+  border-radius: 30px;
+}
+
+.StopItem_input{
+  font-size: var(--font-md);
+  font-family: inherit;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  width: 100%;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  outline: none;
+  resize: vertical;
+  margin-right: var(--space-md);
+}
+
+.StopItem_input:focus {
+  border-color: var(--success-teal);
+}
 

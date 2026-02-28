@@ -173,3 +173,4 @@ export default ItinEdit
 /*                               FUTURE UPDATES                               */
 /* -------------------------------------------------------------------------- */
 //TODO: On completed allow to add pictures and have carosel 
+//TODO: On Page Exit need to save the editor 
