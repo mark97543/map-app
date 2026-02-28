@@ -1,78 +1,158 @@
-.EDIT_wrapper{
+/* ==========================================================================
+   1. MAIN PAGE LAYOUT
+   ========================================================================== */
+.EDIT_wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   align-items: center;
-  padding: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+  gap: var(--space-lg);
+  background-color: var(--bg-dark);
 }
 
-.Slug_Title_Block{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 100%;
+.ITIN_EDIT_note {
+  font-size: var(--font-md);
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin-top: var(--space-md);
 }
 
-.Slug_Title_Block h1{
+/* ==========================================================================
+   2. TRIP TITLE BLOCK (SlugTitle)
+   ========================================================================== */
+.Slug_Title_Block h1 {
+  font-size: var(--font-xxxl);
+  color: var(--text-main);
   text-align: center;
-  width: 100%;
-  margin: 0;
+  transition: var(--transition-smooth);
 }
 
-.Title_inputs{
-  display: flex;
-  flex-direction: row;
-}
-
-.Title_inputs {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px; /* Space around the colon */
-}
-
-/* Target the input inside your component */
 .Title_inputs input {
-  font-size: 2rem; /* Match your H1 font size exactly */
-  font-weight: 700; /* Match H1 boldness */
+  font-size: var(--font-xxxl);
+  font-weight: 800;
   text-align: center;
   background: transparent;
   border: none;
-  border-bottom: 2px dashed var(--primary-muted); /* Visual cue it's editable */
+  border-bottom: 2px dashed var(--primary-muted);
   color: var(--text-main);
   outline: none;
-  font-family: inherit;
-  width: auto;
-  padding: 0;
-  margin: 0;
+  transition: var(--transition-smooth);
 }
 
 .Title_inputs input:focus {
   border-bottom: 2px solid var(--success-teal);
+  color: var(--primary-glow);
 }
 
-.TRIPSUMMARY_p{
-  font-size: var(--font-md);
-  text-align: center;
+/* ==========================================================================
+   3. SHARED SECTION CONTAINERS (Summary & Notes)
+   ========================================================================== */
+.TRIPSUMMARY_wrapper,
+.EDITNOTES_wrapper {
+  width: 100%;
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-muted);
+  box-shadow: var(--shadow-main);
 }
 
-.TRIPSUMMARY_input{
-  font-size: var(--font-md);
-  text-align: center;
-  background: transparent;
-  border: none;
-  border: 2px dashed var(--primary-muted); /* Visual cue it's editable */
+/* Professional Section Labels */
+.TRIPSUMMARY_wrapper h2,
+.EDITNOTES_wrapper h2 {
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary-glow); /* Lightened from primary-muted for better visibility */
+  margin-bottom: var(--space-md);
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ==========================================================================
+   4. SUMMARY INTERACTIVES
+   ========================================================================== */
+.TRIPSUMMARY_p {
+  font-size: var(--font-lg);
   color: var(--text-main);
-  outline: none;
-  font-family: inherit;
-  width: 100%;
+  line-height: 1.6;
+  cursor: pointer;
+  text-align: left;
   padding: var(--space-sm);
-  margin: 0;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
 }
 
-.TRIPSUMMARY_wrapper{
-  margin-top: var(--space-md);
+.TRIPSUMMARY_p:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.TRIPSUMMARY_input {
+  font-size: var(--font-lg);
+  font-family: inherit;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
   width: 100%;
-  max-width: 1200px;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  outline: none;
+  resize: vertical;
+}
+
+.TRIPSUMMARY_input:focus {
+  border-color: var(--success-teal);
+}
+
+/* ==========================================================================
+   5. TRIP NOTES DISPLAY & QUILL OVERRIDES
+   ========================================================================== */
+.trip-notes-display {
+  text-align: left;
+  line-height: 1.8;
+  color: var(--text-main);
+  cursor: pointer;
+  min-height: 50px;
+  font-size: var(--font-lg);
+}
+
+/* List Styles */
+.trip-notes-display ul, 
+.trip-notes-display ol {
+  padding-left: var(--space-md);
+  color: var(--text-dim);
+}
+
+/* Quill Theme Overrides */
+.ql-toolbar.ql-snow {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--primary-muted) !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.ql-container.ql-snow {
+  background-color: var(--bg-dark) !important;
+  border: 1px solid var(--primary-muted) !important;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.ql-editor {
+  color: var(--text-main);
+  font-size: var(--font-lg);
+  min-height: 200px;
+}
+
+/* Icon Colors using your variables */
+.ql-snow .ql-stroke { stroke: var(--text-dim) !important; }
+.ql-snow .ql-fill { fill: var(--text-dim) !important; }
+.ql-snow .ql-picker { color: var(--text-dim) !important; }
+
+/* Interactive Hover state for icons */
+.ql-snow .ql-stroke:hover,
+.ql-snow .ql-picker:hover { 
+  stroke: var(--success-teal) !important; 
+  color: var(--success-teal) !important;
 }

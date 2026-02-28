@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react'
 import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary'
+import TripNote from './Parts/TripNote'
+
 
 export interface Trip{
   id:number;
   title:string;
   trip_id:string;
   trip_summary:string;
+  trip_notes:string;
 }
 
 const ItinEdit = () =>{
@@ -21,11 +24,12 @@ const ItinEdit = () =>{
   const [loading, setLoading] = useState(true);
   const [titleEdit, setTitleEdit]=useState(false);
   const [summaryEdit, setSummaryEdit]=useState(false);
+  const [noteEdit, setNoteEdit]=useState(false);
 
   const [tempId, setTempId] = useState(tripDetails?.trip_id || '');
   const [tempTitle, setTempTitle] = useState(tripDetails?.title || '');
   const [tempSummary, setTempSummary]=useState(tripDetails?.trip_summary || '');
-
+  const [tempNote, setTempNote] = useState<string>(tripDetails?.trip_notes || '');
 
   useEffect(()=>{
     const fetchFullTrip = async () =>{
@@ -43,6 +47,7 @@ const ItinEdit = () =>{
           setTempId(data.trip_id);
           setTempTitle(data.title);
           setTempSummary(data.trip_summary);
+          setTempNote(data.trip_notes)
         }
       } catch (err) {
         console.error("Failed to load full trip details:", err);
@@ -56,15 +61,17 @@ const ItinEdit = () =>{
   const handleAutoSave = async () => {
     setTitleEdit(false);
     setSummaryEdit(false);
+    setNoteEdit(false);
     if (!tripDetails?.id) return;
 
-    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary) {
+    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary || tempNote !== tripDetails.trip_notes) {
       try {
         // 1. Send the update to Directus
         const updated = await updateTrip(tripDetails.id, { 
           trip_id: tempId, 
           title: tempTitle,
-          trip_summary:tempSummary
+          trip_summary:tempSummary,
+          trip_notes:tempNote
         });
 
         if (updated) {
@@ -76,7 +83,7 @@ const ItinEdit = () =>{
           setTempId(updated.trip_id);
           setTempTitle(updated.title);
           setTempSummary(updated.trip_summary)
-          
+          setTempNote(updated.trip_notes)
           console.log("✅ Sync successful with server data.");
           triggerRefresh();
         }
@@ -118,7 +125,15 @@ const ItinEdit = () =>{
         setTempSummary={setTempSummary}
       />
 
+      <TripNote 
+        noteEdit={noteEdit}
+        setNoteEdit={setNoteEdit}
+        tempNote={tempNote}
+        setTempNote={setTempNote}
+        handleAutoSave={handleAutoSave}
+      />
 
+      <p className='ITIN_EDIT_note'><i>Double Click A Item To Edit</i></p>
 
     </div>
   )

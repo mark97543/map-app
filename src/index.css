@@ -27,10 +27,12 @@
   --space-lg: 2.5rem;
 
   /* --- Typography Hierarchy --- */
-  --font-sm: 0.875rem;
+  --font-sm: 0.75rem;
   --font-md: 1rem;
   --font-lg: 1.25rem;
-  --font-xl: 2rem;
+  --font-xl: 1.5rem;
+  --font-xxl:1.75rem;
+  --font-xxxl:2rem;
 
   /* --- Layout Tokens --- */
   --radius-sm:4px;
@@ -52,3 +54,4 @@ body{
   padding: 0;
   box-sizing: border-box;
 }
+
