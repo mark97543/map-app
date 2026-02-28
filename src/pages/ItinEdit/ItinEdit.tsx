@@ -6,7 +6,25 @@ import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary'
 import TripNote from './Parts/TripNote'
+import StopsList from './Parts/StopsList'
+import { type UniqueIdentifier } from '@dnd-kit/core';
 
+export interface Stop {
+  id: UniqueIdentifier;
+  sort: number;         // Note: Directus uses 'sort', not 'sort_order'
+  name: string;         // Note: Directus uses 'name', not 'location_name'
+  lat: string | null;   // Comes as "32.77670"
+  lng: string | null;
+  stay_time: number;
+  type: string;         // e.g., "origin"
+  note: string | null;
+  budget: string;
+  trip_id: number;
+  
+  // GUI Calculated Fields
+  arrival_time?: string;
+  departure_time?: string;
+}
 
 export interface Trip{
   id:number;
@@ -20,7 +38,7 @@ const ItinEdit = () =>{
   const {slug}=useParams<{slug:string}>(); //Grab the slug
   const [tripDetails, setTripDetails] = useState<Trip | null>(null);
   const {triggerRefresh}=useDashboard();
-  const [segments, setSegments] = useState([]);
+  const [segments, setSegments] = useState<Stop[]>([]);
   const [loading, setLoading] = useState(true);
   const [titleEdit, setTitleEdit]=useState(false);
   const [summaryEdit, setSummaryEdit]=useState(false);
@@ -30,6 +48,7 @@ const ItinEdit = () =>{
   const [tempTitle, setTempTitle] = useState(tripDetails?.title || '');
   const [tempSummary, setTempSummary]=useState(tripDetails?.trip_summary || '');
   const [tempNote, setTempNote] = useState<string>(tripDetails?.trip_notes || '');
+  const [tempSegments, setTempSegments]=useState<Stop[]>([]);
 
   useEffect(()=>{
     const fetchFullTrip = async () =>{
@@ -48,6 +67,7 @@ const ItinEdit = () =>{
           setTempTitle(data.title);
           setTempSummary(data.trip_summary);
           setTempNote(data.trip_notes)
+          setTempSegments(data.stops)
         }
       } catch (err) {
         console.error("Failed to load full trip details:", err);
@@ -64,14 +84,15 @@ const ItinEdit = () =>{
     setNoteEdit(false);
     if (!tripDetails?.id) return;
 
-    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary || tempNote !== tripDetails.trip_notes) {
+    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary || tempNote !== tripDetails.trip_notes || tempSegments!==segments) {
       try {
         // 1. Send the update to Directus
         const updated = await updateTrip(tripDetails.id, { 
           trip_id: tempId, 
           title: tempTitle,
           trip_summary:tempSummary,
-          trip_notes:tempNote
+          trip_notes:tempNote,
+          stops: tempSegments
         });
 
         if (updated) {
@@ -134,6 +155,12 @@ const ItinEdit = () =>{
       />
 
       <p className='ITIN_EDIT_note'><i>Double Click A Item To Edit</i></p>
+
+      <StopsList
+        stops={tempSegments}
+        setStops={setTempSegments}
+        handleAutoSave={handleAutoSave}
+      />
 
     </div>
   )

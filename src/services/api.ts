@@ -96,3 +96,25 @@ export const createTrip = async (newTripData: object) => {
   const { data } = await response.json();
   return data;
 };
+
+// src/services/api.ts
+
+export const updateStopsBatch = async (payload: { id: number | string, sort: number }[]) => {
+  const token = getAuthToken();
+
+  // Directus Batch Update: PATCH to the collection root with an array
+  const response = await fetch(`${DIRECTUS_URL}/items/stops`, {
+    method: 'PATCH',
+    headers: getHeaders(token),
+    body: JSON.stringify(payload), // Send the array of {id, sort}
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Batch update failed:", errorData);
+    throw new Error("Failed to update stops order");
+  }
+
+  const { data } = await response.json();
+  return data;
+};

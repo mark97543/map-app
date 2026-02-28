@@ -21,7 +21,7 @@
   --success-teal: #70A9A1; /* Calm Teal - for "Saved to Directus" confirmations. */
 
   /* --- Spacing System --- */
-  --space-xs: 0.23rem;
+  --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1.5rem;    /* Specified Requirement */
   --space-lg: 2.5rem;

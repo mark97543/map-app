@@ -116,16 +116,15 @@ const statusPill=(status:string, rating:number)=>{
 }
 
 const timeConverter = (time: number) => {
-  // If time is 0 or null, return a fallback
   if (!time) return "0h 0m";
 
   const hours = Math.floor(time / 60);
-  const minutes = time % 60; // Using the "Modulo" (%) operator is a cleaner way to get the remainder!
+  const minutes = time % 60;
 
   return (
-    <>
-      {hours} <b>h</b> {minutes} <b>m</b>
-    </>
+    <span style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
+      {hours}<b>h</b>&nbsp;{minutes}<b>m</b>
+    </span>
   );
 };
 
