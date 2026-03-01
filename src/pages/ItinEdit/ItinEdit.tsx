@@ -1,3 +1,9 @@
+/* ==========================================================================
+   COMPONENT: ItinEdit
+   DESCRIPTION: Main "Source of Truth" for Trip Editing. Manages state for 
+                metadata, rich text notes, and the draggable route order.
+   ========================================================================== */
+
 import './ItinEdit.css'
 import { useParams } from 'react-router-dom'
 import { useDashboard } from '../../context/DashboardContext'
@@ -6,125 +12,130 @@ import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary'
 import TripNote from './Parts/TripNote'
-import StopsList from './Parts/StopsList'
+import {StopsList} from './Parts/StopsList'
 import { type UniqueIdentifier } from '@dnd-kit/core';
 
+// #region --- INTERFACES ---
 export interface Stop {
   id: UniqueIdentifier;
-  sort: number;         // Note: Directus uses 'sort', not 'sort_order'
-  name: string;         // Note: Directus uses 'name', not 'location_name'
-  lat: string | null;   // Comes as "32.77670"
-  lng: string | null;
-  stay_time: number;
-  type: string;         // e.g., "origin"
+  sort: number;         
+  name: string;         
+  lat: number | null;   
+  lng: number | null;
+  stay_time: number | null;
+  type: string;         
   note: string | null;
-  budget: string;
+  budget: number | null;
   trip_id: number;
-  
+  morning_depart: string | null;
   // GUI Calculated Fields
   arrival_time?: string;
   departure_time?: string;
 }
 
-export interface Trip{
-  id:number;
-  title:string;
-  trip_id:string;
-  trip_summary:string;
-  trip_notes:string;
+export interface Trip {
+  id: number;
+  title: string;
+  trip_id: string;
+  trip_summary: string;
+  trip_notes: string;
+  stops?: Stop[];
 }
+// #endregion
 
-const ItinEdit = () =>{
-  const {slug}=useParams<{slug:string}>(); //Grab the slug
+const ItinEdit = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const { triggerRefresh } = useDashboard();
+
+  // --- Core Data ---
   const [tripDetails, setTripDetails] = useState<Trip | null>(null);
-  const {triggerRefresh}=useDashboard();
-  const [segments, setSegments] = useState<Stop[]>([]);
   const [loading, setLoading] = useState(true);
-  const [titleEdit, setTitleEdit]=useState(false);
-  const [summaryEdit, setSummaryEdit]=useState(false);
-  const [noteEdit, setNoteEdit]=useState(false);
 
-  const [tempId, setTempId] = useState(tripDetails?.trip_id || '');
-  const [tempTitle, setTempTitle] = useState(tripDetails?.title || '');
-  const [tempSummary, setTempSummary]=useState(tripDetails?.trip_summary || '');
-  const [tempNote, setTempNote] = useState<string>(tripDetails?.trip_notes || '');
-  const [tempSegments, setTempSegments]=useState<Stop[]>([]);
+  // --- UI Toggle States ---
+  const [titleEdit, setTitleEdit] = useState(false);
+  const [summaryEdit, setSummaryEdit] = useState(false);
+  const [noteEdit, setNoteEdit] = useState(false);
 
-  useEffect(()=>{
-    const fetchFullTrip = async () =>{
-      if(!slug) return;
+  // --- Draft/Temp States (User Interactions) ---
+  const [tempId, setTempId] = useState('');
+  const [tempTitle, setTempTitle] = useState('');
+  const [tempSummary, setTempSummary] = useState('');
+  const [tempNote, setTempNote] = useState<string>('');
+  const [tempSegments, setTempSegments] = useState<Stop[]>([]);
 
-      setLoading(true)
-      try{
-        const data = await  getTripById(slug);
-
-        if(data){
+  // #region --- FETCH LOGIC ---
+  useEffect(() => {
+    const fetchFullTrip = async () => {
+      if (!slug) return;
+      setLoading(true);
+      try {
+        const data = await getTripById(slug);
+        if (data) {
           setTripDetails(data);
-          setSegments(data.stops || []);
-
-          // 🚀 Set temp states here!
-          setTempId(data.trip_id);
-          setTempTitle(data.title);
-          setTempSummary(data.trip_summary);
-          setTempNote(data.trip_notes)
-          setTempSegments(data.stops)
+          // Sync Draft States
+          setTempId(data.trip_id || '');
+          setTempTitle(data.title || '');
+          setTempSummary(data.trip_summary || '');
+          setTempNote(data.trip_notes || '');
+          setTempSegments(data.stops || []);
         }
       } catch (err) {
-        console.error("Failed to load full trip details:", err);
+        console.error("Failed to load trip:", err);
       } finally {
         setLoading(false);
-      }  
-    }
+      }
+    };
     fetchFullTrip();
-  },[slug])
+  }, [slug]);
+  // #endregion
 
+  // #region --- AUTO-SAVE LOGIC ---
   const handleAutoSave = async () => {
     setTitleEdit(false);
     setSummaryEdit(false);
     setNoteEdit(false);
+
     if (!tripDetails?.id) return;
 
-    if (tempId !== tripDetails.trip_id || tempTitle !== tripDetails.title || tempSummary !== tripDetails.trip_summary || tempNote !== tripDetails.trip_notes || tempSegments!==segments) {
+    // Change Detection
+    const hasChanges = 
+      tempId !== tripDetails.trip_id || 
+      tempTitle !== tripDetails.title || 
+      tempSummary !== tripDetails.trip_summary || 
+      tempNote !== tripDetails.trip_notes;
+
+    if (hasChanges) {
       try {
-        // 1. Send the update to Directus
-        const updated = await updateTrip(tripDetails.id, { 
+        const payload = { 
           trip_id: tempId, 
           title: tempTitle,
-          trip_summary:tempSummary,
-          trip_notes:tempNote,
-          stops: tempSegments
-        });
+          trip_summary: tempSummary,
+          trip_notes: tempNote
+        };
+
+        const updated = await updateTrip(tripDetails.id, payload);
 
         if (updated) {
-          // 2. IMPORTANT: Update the source of truth with server data
           setTripDetails(updated); 
-          
-          // 3. IMPORTANT: Immediately sync temp states to match the new truth
-          // This prevents the next edit from using stale local values
-          setTempId(updated.trip_id);
-          setTempTitle(updated.title);
-          setTempSummary(updated.trip_summary)
-          setTempNote(updated.trip_notes)
-          console.log("✅ Sync successful with server data.");
           triggerRefresh();
+          console.log("✅ Trip metadata synced with server.");
         }
       } catch (err) {
-        // Rollback local display on error
+        // Error Recovery (Rollback)
         setTempId(tripDetails.trip_id);
         setTempTitle(tripDetails.title);
+        setTempSummary(tripDetails.trip_summary);
+        setTempNote(tripDetails.trip_notes);
         console.error("Save failed:", err);
       }
     }
   };
+  // #endregion
 
+  if (loading) return <div className="loading-screen">Loading Trip Details...</div>;
+  if (!tripDetails) return <div className="error-screen">Trip not found.</div>;
 
-  if (loading) return <div>Loading Trip Details...</div>;
-  if (!tripDetails) return <div>Trip not found.</div>
-
-  console.log('Trip Details: ', tripDetails);
-  //console.log('Trip Segments: ', segments);
-
-  return(
+  return (
     <div className='EDIT_wrapper'>
       <SlugTitle 
         titleEdit={titleEdit}
@@ -154,23 +165,27 @@ const ItinEdit = () =>{
         handleAutoSave={handleAutoSave}
       />
 
-      <p className='ITIN_EDIT_note'><i>Double Click A Item To Edit</i></p>
+      <p className='ITIN_EDIT_note'><i>Double Click An Item To Edit</i></p>
 
       <StopsList
         stops={tempSegments}
         setStops={setTempSegments}
-        handleAutoSave={handleAutoSave}
+        handleAutoSave={handleAutoSave} 
       />
 
     </div>
   )
 }
 
-export default ItinEdit
+export default ItinEdit;
 
-
-/* -------------------------------------------------------------------------- */
-/*                               FUTURE UPDATES                               */
-/* -------------------------------------------------------------------------- */
-//TODO: On completed allow to add pictures and have carosel 
-//TODO: On Page Exit need to save the editor 
+/* ==========================================================================
+   FUTURE UPDATES & ROADMAP
+   ========================================================================== */
+// #region --- TODOS ---
+/**
+ * TODO: On completed, allow to add pictures and have carousel
+ * TODO: On Page Exit, implement prompt/logic to save the editor (dirty check)
+ * TODO: Implement "Time Ripple" calculation logic for Stop arrival/departure
+ */
+// #endregion
