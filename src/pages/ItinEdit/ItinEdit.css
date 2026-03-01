@@ -403,3 +403,26 @@
 .StayBudget_Group input::-webkit-outer-spin-button,
 .StayBudget_Group input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .StayBudget_Group input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+/* ==========================================================================
+   8. DELETE BUTTON (Edit Mode)
+   ========================================================================== */
+.StopItem_DeleteBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: auto; /* Pushes Save/Cancel to the right */
+}
+
+.StopItem_DeleteBtn:hover {
+  background: rgba(255, 77, 77, 0.1); /* Subtle red background */
+  color: #ff4d4d; /* Danger red */
+  border-color: rgba(255, 77, 77, 0.3);
+}

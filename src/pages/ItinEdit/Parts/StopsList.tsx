@@ -8,7 +8,7 @@ import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { StopItem } from "./StopItem";
 import { type Stop } from "../ItinEdit";
-import { updateStopsBatch } from '../../../services/api';
+import { updateStopsBatch, deleteStopFromDB } from '../../../services/api';
 import { type UniqueIdentifier } from "@dnd-kit/core";
 
 // 🎯 The "Brain" for the List
@@ -34,6 +34,38 @@ export const StopsList: React.FC<StopsListProps> = ({ stops, setStops }) => {
       triggerSortSave(updated); 
       return updated;
     });
+  };
+  // #endregion
+
+  // #region --- DELETE HANDLER ---
+  const handleDeleteStop = async (id: UniqueIdentifier) => {
+    try {
+      // 1. Tell the Database to delete the stop
+      await deleteStopFromDB(id);
+      console.log(`🗑️ Stop ${id} successfully deleted from DB.`);
+
+      // 2. If DB delete succeeds, update the local UI and re-sort
+      setStops((prevStops) => {
+        const remainingStops = prevStops.filter((stop) => stop.id !== id);
+        
+        // Re-number the sort order for the remaining items
+        const reordered = remainingStops.map((stop, index) => ({
+          ...stop,
+          sort: index + 1,
+        }));
+
+        // 3. Sync the new sort order to the database
+        triggerSortSave(reordered); 
+        
+        return reordered;
+      });
+
+    } catch (error) {
+      // If the DB fails to delete, we don't remove it from the screen.
+      // This prevents the user from thinking it's gone when it isn't.
+      console.error("❌ Failed to delete stop. UI not updated.", error);
+      alert("Failed to delete the stop. Please check your connection and try again.");
+    }
   };
   // #endregion
 
@@ -108,7 +140,8 @@ export const StopsList: React.FC<StopsListProps> = ({ stops, setStops }) => {
               budget={stop.budget}
               lat={stop.lat} 
               lng={stop.lng} 
-              onSave={handleUpdateStopData} 
+              onSave={handleUpdateStopData}
+              onDelete={handleDeleteStop} 
               arrivalTime="--:--" 
               departureTime="--:--"
             />

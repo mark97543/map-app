@@ -8,7 +8,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { type UniqueIdentifier } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
-import { Copy, Check } from "lucide-react"; 
+import { Copy, Check,Trash2 } from "lucide-react"; 
 
 import Button from "../../../assets/componets/Button/Button";
 import { STOP_TYPES } from "./Resources/stopTypes";
@@ -29,11 +29,12 @@ interface ItemProps {
   arrivalTime?: string;   
   departureTime?: string; 
   onSave: (id: UniqueIdentifier, updates: Partial<Stop>) => void; 
+  onDelete:(id:UniqueIdentifier)=>void;
 }
 
 export function StopItem({ 
   id, label, onSave, type, note, stay, morning_depart, budget, 
-  lat, lng, arrivalTime, departureTime 
+  lat, lng, arrivalTime, departureTime, onDelete 
 }: ItemProps) {
   
   // #region --- STATE ---
@@ -127,6 +128,15 @@ export function StopItem({
         <div className="StopItem_ActionButtons">
           {editItem ? (
             <>
+              <button className="StopItem_DeleteBtn" onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this stop?")) {
+                    onDelete(id);
+                  }
+                }}
+                title="Delete Stop"
+              >
+                  <Trash2 size={18} />
+              </button>
               <Button addClass="StopItem_EditButton" onClick={handleSave}>Save</Button>
               <Button type="caution" addClass="StopItem_Cancel" onClick={handleCancel}>Cancel</Button>
             </>

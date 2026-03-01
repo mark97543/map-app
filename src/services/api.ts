@@ -118,3 +118,28 @@ export const updateStopsBatch = async (payload: { id: number | string, sort: num
   const { data } = await response.json();
   return data;
 };
+
+/**
+ * Deletes a single stop by ID from the database.
+ */
+export const deleteStopFromDB = async (stopId: string | number) => {
+  const token = getAuthToken(); // 1. Grab the token
+
+  try {
+    const response = await fetch(`${DIRECTUS_URL}/items/stops/${stopId}`, {
+      method: 'DELETE',
+      headers: getHeaders(token), // 2. Attach the token using your helper!
+    });
+
+    if (!response.ok) {
+      // Try to parse the Directus error message if available
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Failed to delete stop: ${response.status} ${JSON.stringify(errorData)}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ API Error deleting stop:", error);
+    throw error;
+  }
+};
