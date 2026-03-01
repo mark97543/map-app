@@ -22,7 +22,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setLoading(true);
     try {
       const data = await getAllTrips();
-      console.log("Fetched All Trips:", data);
+      //console.log("Fetched All Trips:", data);
       setAllTrip(data);
     } catch (error) {
       console.error("Error loading gallery:", error);

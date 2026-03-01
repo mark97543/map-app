@@ -46,8 +46,8 @@ export function StopItem({
     stay,
     morning_depart,
     budget: budget?.toString() || "",
-    lat,
-    lng
+    lat: lat !== null ? lat.toString() : "", 
+    lng: lng !== null ? lng.toString() : ""
   });
   const [copied, setCopied] = useState(false);
 
@@ -64,7 +64,9 @@ export function StopItem({
   useEffect(() => {
     setDraft({
       label, type, note, stay, morning_depart,
-      budget: budget?.toString() || "", lat, lng
+      budget: budget?.toString() || "", 
+      lat: lat !== null ? lat.toString() : "", 
+      lng: lng !== null ? lng.toString() : ""
     });
   }, [label, type, note, stay, morning_depart, budget, lat, lng]);
   // #endregion
@@ -73,6 +75,10 @@ export function StopItem({
   const handleSave = () => {
     const isHotel = draft.type === "hotel";
     
+    // Clean the strings: remove spaces and parse to Floats
+    const parsedLat = draft.lat !== "" ? parseFloat(draft.lat) : null;
+    const parsedLng = draft.lng !== "" ? parseFloat(draft.lng) : null;
+
     const finalUpdates: Partial<Stop> = {
       name: draft.label,
       type: draft.type,
@@ -80,8 +86,9 @@ export function StopItem({
       stay_time: isHotel ? 0 : draft.stay,
       morning_depart: isHotel ? draft.morning_depart : null,
       budget: draft.budget === "" ? null : parseFloat(draft.budget),
-      lat: draft.lat !== null ? Number(draft.lat) : null,
-      lng: draft.lng !== null ? Number(draft.lng) : null,
+      // Use the parsed numbers
+      lat: isNaN(parsedLat as number) ? null : parsedLat,
+      lng: isNaN(parsedLng as number) ? null : parsedLng,
     };
 
     onSave(id, finalUpdates);
@@ -91,7 +98,9 @@ export function StopItem({
   const handleCancel = () => {
     setDraft({
       label, type, note, stay, morning_depart,
-      budget: budget?.toString() || "", lat, lng
+      budget: budget?.toString() || "",
+      lat: lat !== null ? lat.toString() : "", 
+      lng: lng !== null ? lng.toString() : ""
     });
     setEditItem(false);
   };
@@ -194,10 +203,26 @@ export function StopItem({
           <div className="StayBudget_Group">
              {editItem ? (
                 <div className="StopItem_CoordInputs_Inline">
-                  <span className="Edit_Prefix">Lat:</span>
-                  <input type="number" value={draft.lat ?? ""} onChange={(e) => setDraft({...draft, lat: Number(e.target.value)})} placeholder="0.0" />
-                  <span className="Edit_Prefix">Lng:</span>
-                  <input type="number" value={draft.lng ?? ""} onChange={(e) => setDraft({...draft, lng: Number(e.target.value)})} placeholder="0.0" />
+                  <span className="Edit_Prefix">Lat,Lng:</span>
+                  <input 
+                    type="text" 
+                    placeholder="0.0, 0.0"
+                    onFocus={(e) => e.target.select()}
+                    value={`${draft.lat}${draft.lng ? `, ${draft.lng}` : ""}`}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val.includes(",")) {
+                        const [latPart, lngPart] = val.split(",");
+                        setDraft({ 
+                          ...draft, 
+                          lat: latPart.trim(), 
+                          lng: lngPart ? lngPart.trim() : "" // Handle partial typing
+                        });
+                      } else {
+                        setDraft({ ...draft, lat: val.trim(), lng: "" });
+                      }
+                    }}
+                  />
                 </div>
              ) : (
                 draft.lat && draft.lng && (
@@ -238,5 +263,6 @@ export function StopItem({
 /**
  * TODO: Add a "Locate on Map" button that centers the main map on this stop's coords.
  * TODO: Implement auto-reverse geocoding to suggest a label based on Lat/Lng.
+ * TODO: Need to set start time and Date 
  */
 // #endregion

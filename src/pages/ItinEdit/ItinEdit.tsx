@@ -2,6 +2,7 @@
    COMPONENT: ItinEdit
    DESCRIPTION: Main "Source of Truth" for Trip Editing. Manages state for 
                 metadata, rich text notes, and the draggable route order.
+                Includes auto-syncing logic for derived data (like budgets).
    ========================================================================== */
 
 import './ItinEdit.css'
@@ -12,7 +13,7 @@ import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary'
 import TripNote from './Parts/TripNote'
-import {StopsList} from './Parts/StopsList'
+import { StopsList } from './Parts/StopsList'
 import { type UniqueIdentifier } from '@dnd-kit/core';
 
 // #region --- INTERFACES ---
@@ -31,6 +32,8 @@ export interface Stop {
   // GUI Calculated Fields
   arrival_time?: string;
   departure_time?: string;
+  drive_to_next_minutes?: number | null;
+  drive_to_next_miles?: number | null;
 }
 
 export interface Trip {
@@ -39,6 +42,7 @@ export interface Trip {
   trip_id: string;
   trip_summary: string;
   trip_notes: string;
+  total_budget?: number; // Ensures Directus total_budget syncs properly
   stops?: Stop[];
 }
 // #endregion
@@ -89,7 +93,38 @@ const ItinEdit = () => {
   }, [slug]);
   // #endregion
 
-  // #region --- AUTO-SAVE LOGIC ---
+  // #region --- BUDGET MATH & WATCHER ---
+  // 1. Calculate the real-time total from the visible UI segments
+  const totalBudget = tempSegments.reduce((runningTotal: number, currentStop: any) => {
+    const stopBudget = Number(currentStop.budget) || 0;
+    return runningTotal + stopBudget;
+  }, 0);
+
+  // 2. Watcher: If the UI total ever drifts from the DB total, sync it automatically!
+  useEffect(() => {
+    if (!tripDetails?.id) return;
+
+    const dbBudget = Number(tripDetails.total_budget) || 0;
+
+    if (totalBudget !== dbBudget) {
+      const syncBudget = async () => {
+        try {
+          const updated = await updateTrip(tripDetails.id, { total_budget: totalBudget });
+          if (updated) {
+            setTripDetails(updated); // Update local state so it stops watching
+            triggerRefresh(); // Tell the dashboard to fetch the new number
+            console.log(`💸 Budget auto-synced with server: $${totalBudget}`);
+          }
+        } catch (error) {
+          console.error("Failed to auto-sync budget:", error);
+        }
+      };
+      syncBudget();
+    }
+  }, [totalBudget, tripDetails?.id, tripDetails?.total_budget, triggerRefresh]);
+  // #endregion
+
+  // #region --- AUTO-SAVE LOGIC (Metadata only) ---
   const handleAutoSave = async () => {
     setTitleEdit(false);
     setSummaryEdit(false);
@@ -97,7 +132,7 @@ const ItinEdit = () => {
 
     if (!tripDetails?.id) return;
 
-    // Change Detection
+    // Change Detection for text fields (Budget is handled by the Watcher above)
     const hasChanges = 
       tempId !== tripDetails.trip_id || 
       tempTitle !== tripDetails.title || 
@@ -121,7 +156,7 @@ const ItinEdit = () => {
           console.log("✅ Trip metadata synced with server.");
         }
       } catch (err) {
-        // Error Recovery (Rollback)
+        // Error Recovery (Rollback UI to match DB)
         setTempId(tripDetails.trip_id);
         setTempTitle(tripDetails.title);
         setTempSummary(tripDetails.trip_summary);
@@ -171,6 +206,7 @@ const ItinEdit = () => {
         stops={tempSegments}
         setStops={setTempSegments}
         handleAutoSave={handleAutoSave} 
+        tripId={tripDetails.id} 
       />
 
     </div>
@@ -179,13 +215,18 @@ const ItinEdit = () => {
 
 export default ItinEdit;
 
+/* -------------------------------------------------------------------------- */
+/* Helper Functions                                                           */
+/* -------------------------------------------------------------------------- */
+
+
+
 /* ==========================================================================
    FUTURE UPDATES & ROADMAP
    ========================================================================== */
 // #region --- TODOS ---
 /**
  * TODO: On completed, allow to add pictures and have carousel
- * TODO: On Page Exit, implement prompt/logic to save the editor (dirty check)
  * TODO: Implement "Time Ripple" calculation logic for Stop arrival/departure
  */
 // #endregion

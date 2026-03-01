@@ -97,8 +97,6 @@ export const createTrip = async (newTripData: object) => {
   return data;
 };
 
-// src/services/api.ts
-
 export const updateStopsBatch = async (payload: { id: number | string, sort: number }[]) => {
   const token = getAuthToken();
 
@@ -140,6 +138,82 @@ export const deleteStopFromDB = async (stopId: string | number) => {
     return true;
   } catch (error) {
     console.error("❌ API Error deleting stop:", error);
+    throw error;
+  }
+};
+
+/**
+ * Creates a new blank stop in the database.
+ */
+export const createStopInDB = async (newStopData: object) => {
+  const token = getAuthToken();
+
+  try {
+    const response = await fetch(`${DIRECTUS_URL}/items/stops`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(newStopData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Failed to create stop: ${response.status} ${JSON.stringify(errorData)}`);
+    }
+
+    const { data } = await response.json();
+    return data; // Returns the newly created stop with its official Database ID
+  } catch (error) {
+    console.error("❌ API Error creating stop:", error);
+    throw error;
+  }
+};
+
+/**
+ * Deletes an entire trip from the database.
+ */
+export const deleteTripFromDB = async (tripId: number | string) => {
+  const token = getAuthToken();
+
+  try {
+    const response = await fetch(`${DIRECTUS_URL}/items/trips/${tripId}`, {
+      method: 'DELETE',
+      headers: getHeaders(token),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Failed to delete trip: ${response.status} ${JSON.stringify(errorData)}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ API Error deleting trip:", error);
+    throw error;
+  }
+};
+
+/**
+ * Updates a single stop by ID in the database.
+ */
+export const updateStopInDB = async (stopId: string | number, updates: object) => {
+  const token = getAuthToken();
+
+  try {
+    const response = await fetch(`${DIRECTUS_URL}/items/stops/${stopId}`, {
+      method: 'PATCH',
+      headers: getHeaders(token),
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Failed to update stop: ${response.status} ${JSON.stringify(errorData)}`);
+    }
+
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("❌ API Error updating stop:", error);
     throw error;
   }
 };

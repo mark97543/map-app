@@ -394,7 +394,7 @@
   text-align: center;
   border-radius: var(--radius-md);
   outline: none;
-  width: 90px;
+  width: 180px;
   transition: border-color 0.2s;
 }
 .StopItem_CoordInputs_Inline input:focus { border-color: var(--success-teal); }
@@ -426,3 +426,65 @@
   color: #ff4d4d; /* Danger red */
   border-color: rgba(255, 77, 77, 0.3);
 }
+
+/* ==========================================================================
+   9. ADD NEW STOP BUTTON
+   ========================================================================== */
+.StopsList_AddButton {
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background-color: transparent;
+  border: 2px dashed var(--primary-muted);
+  color: var(--text-dim);
+  font-size: var(--font-lg);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.StopsList_AddButton:hover {
+  border-color: var(--success-teal);
+  color: var(--success-teal);
+  background-color: rgba(0, 255, 170, 0.05);
+}
+
+/* ==========================================================================
+   10. Trip Delete Butotn 
+   ========================================================================== */
+
+   /* Card Header & Delete Button */
+.ItinSelect_CardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.ItinSelect_CardHeader h2 {
+  margin: 0;
+  flex: 1; /* Pushes the delete button to the right edge */
+  padding-right: 12px;
+}
+
+.ItinSelect_DeleteTripBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ItinSelect_DeleteTripBtn:hover {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}
+

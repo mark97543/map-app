@@ -1,153 +1,277 @@
 /* ==========================================================================
    COMPONENT: StopsList
-   DESCRIPTION: Handles the drag-and-drop reordering logic and batch updates 
-                for all stop-related data.
+   DESCRIPTION: Renders the draggable, sortable list of itinerary stops.
+                Manages the Time Ripple engine to calculate arrival/departure
+                times dynamically via the Mapbox Directions API batching.
    ========================================================================== */
 
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import React, { useState, useEffect } from "react";
+import { 
+  DndContext, 
+  closestCenter, 
+  KeyboardSensor, 
+  PointerSensor, 
+  useSensor, 
+  useSensors, 
+  type DragEndEvent ,
+  type UniqueIdentifier
+} from "@dnd-kit/core";
+import { 
+  arrayMove, 
+  SortableContext, 
+  sortableKeyboardCoordinates, 
+  verticalListSortingStrategy 
+} from "@dnd-kit/sortable";
 import { StopItem } from "./StopItem";
 import { type Stop } from "../ItinEdit";
-import { updateStopsBatch, deleteStopFromDB } from '../../../services/api';
-import { type UniqueIdentifier } from "@dnd-kit/core";
+import { createStopInDB, deleteStopFromDB, updateStopsBatch, updateStopInDB } from '../../../services/api'; 
+import { fetchBatchDriveData, addMinutes } from "./Resources/RouteEngine";
+import { Car } from "lucide-react"; 
 
-// 🎯 The "Brain" for the List
+// #region --- INTERFACES ---
 interface StopsListProps {
-  stops: Stop[]; 
+  tripId: number | string;
+  stops: Stop[];
   setStops: React.Dispatch<React.SetStateAction<Stop[]>>;
   handleAutoSave: () => Promise<void>;
 }
+// #endregion
 
-export const StopsList: React.FC<StopsListProps> = ({ stops, setStops }) => {
+export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, handleAutoSave }) => {
+  const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
+  const [isCalculating, setIsCalculating] = useState(false);
 
-  // #region --- UPDATE HANDLER ---
-  /**
-   * Receives a partial update object from StopItem and merges it into state.
-   */
-  const handleUpdateStopData = (id: UniqueIdentifier, updates: Partial<Stop>) => {
-    setStops((prevStops) => {
-      const updated = prevStops.map((stop) => 
-        stop.id === id ? { ...stop, ...updates } : stop
-      );
-
-      // Persist the changes to the DB
-      triggerSortSave(updated); 
-      return updated;
-    });
-  };
+  // #region --- DRAG & DROP SENSORS ---
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // Requires 5px of movement before dragging starts (allows clicking inner buttons)
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   // #endregion
 
-  // #region --- DELETE HANDLER ---
-  const handleDeleteStop = async (id: UniqueIdentifier) => {
+  // #region --- TIME RIPPLE ENGINE ---
+  useEffect(() => {
+    const runTimeRipple = async () => {
+      if (stops.length === 0) {
+        setCalculatedStops([]);
+        return;
+      }
+
+      setIsCalculating(true);
+      const newCalculatedStops = JSON.parse(JSON.stringify(stops)); 
+      
+      // 1. GATHER COORDINATES FOR BATCH API CALL
+      const validCoords = newCalculatedStops
+        .filter((s: any) => 
+          s.lat !== null && 
+          s.lng !== null && 
+          s.lat !== 0 && 
+          s.lng !== 0 // Add this to prevent Mapbox errors
+        )
+        .map((s: any) => ({ lat: s.lat, lng: s.lng }));
+
+      // 2. FETCH ALL DRIVE TIMES IN ONE CALL (MAPBOX)
+      let driveLegs: any[] = [];
+      if (validCoords.length >= 2) {
+        driveLegs = await fetchBatchDriveData(validCoords);
+      }
+
+      // 3. RUN THE TIME RIPPLE MATH
+      let currentDepartureTime = newCalculatedStops[0].morning_depart || "08:00";
+      let validCoordIndex = 0; 
+
+      for (let i = 0; i < newCalculatedStops.length; i++) {
+        const stop = newCalculatedStops[i];
+
+        // --- Arrival Time ---
+        stop.arrival_time = i === 0 ? "--:--" : currentDepartureTime;
+
+        // --- Departure Time ---
+        if (stop.type === "hotel" && stop.morning_depart) {
+          stop.departure_time = stop.morning_depart;
+        } else {
+          stop.departure_time = addMinutes(stop.arrival_time, stop.stay_time || 0);
+        }
+        currentDepartureTime = stop.departure_time;
+
+        // --- Drive to Next Stop ---
+        if (i < newCalculatedStops.length - 1) {
+          const nextStop = newCalculatedStops[i + 1];
+          
+          if (stop.lat && stop.lng && nextStop.lat && nextStop.lng) {
+            const leg = driveLegs[validCoordIndex];
+            if (leg) {
+              stop.drive_to_next_miles = leg.miles;
+              stop.drive_to_next_minutes = leg.minutes;
+              
+              // Add drive time to the running clock for the next stop's arrival!
+              currentDepartureTime = addMinutes(currentDepartureTime, leg.minutes);
+              validCoordIndex++; 
+            }
+          } else {
+            // Missing coordinates, can't calculate drive
+            stop.drive_to_next_miles = null;
+            stop.drive_to_next_minutes = null;
+          }
+        }
+      }
+
+      setCalculatedStops(newCalculatedStops);
+      setIsCalculating(false);
+    };
+
+    // 500ms debounce: Wait for the user to stop editing/dragging before firing Mapbox
+    const timer = setTimeout(() => {
+      runTimeRipple();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [stops]); 
+  // #endregion
+
+  // #region --- CRUD HANDLERS ---
+  const handleAddStop = async () => {
+    const blankStop = {
+      trip_id: tripId, 
+      sort: stops.length + 1,
+      name: "New Stop",
+      type: "origin", 
+      note: "",
+      stay_time: 0,
+      morning_depart: "08:00",
+      budget: 0,
+      lat: 0,
+      lng: 0
+    };
+
     try {
-      // 1. Tell the Database to delete the stop
-      await deleteStopFromDB(id);
-      console.log(`🗑️ Stop ${id} successfully deleted from DB.`);
-
-      // 2. If DB delete succeeds, update the local UI and re-sort
-      setStops((prevStops) => {
-        const remainingStops = prevStops.filter((stop) => stop.id !== id);
-        
-        // Re-number the sort order for the remaining items
-        const reordered = remainingStops.map((stop, index) => ({
-          ...stop,
-          sort: index + 1,
-        }));
-
-        // 3. Sync the new sort order to the database
-        triggerSortSave(reordered); 
-        
-        return reordered;
-      });
-
+      const newStopFromDB = await createStopInDB(blankStop);
+      setStops((prev) => [...prev, newStopFromDB]);
+      console.log("✅ New stop created.");
     } catch (error) {
-      // If the DB fails to delete, we don't remove it from the screen.
-      // This prevents the user from thinking it's gone when it isn't.
-      console.error("❌ Failed to delete stop. UI not updated.", error);
-      alert("Failed to delete the stop. Please check your connection and try again.");
+      console.error("❌ Failed to add new stop", error);
+      alert("Could not create a new stop. Please try again.");
     }
   };
-  // #endregion
 
-  // #region --- API SYNC ---
-  const triggerSortSave = async (updatedStops: Stop[]) => {
+  const handleDeleteStop = async (stopId: string | number) => {
+    const confirm = window.confirm("Are you sure you want to delete this stop?");
+    if (!confirm) return;
+
     try {
-      const payload = updatedStops.map(s => ({
-        id: s.id,
-        sort: s.sort,
-        name: s.name,
-        type: s.type,
-        note: s.note,
-        stay_time: s.stay_time,
-        morning_depart: s.morning_depart,
-        budget: s.budget,
-        lat: s.lat, 
-        lng: s.lng  
-      }));
-
-      await updateStopsBatch(payload); 
-      console.log("✅ Stops batch update successful.");
-    } catch (err) {
-      console.error("❌ Sync Error in StopsList:", err);
+      await deleteStopFromDB(stopId);
+      setStops((prev) => prev.filter((s) => s.id !== stopId));
+      handleAutoSave(); 
+    } catch (error) {
+      console.error("Failed to delete stop:", error);
     }
   };
+
+  const handleUpdateStopData = async (id: UniqueIdentifier, updates: Partial<Stop>) => {
+    // Optimistic UI update (makes the screen feel fast)
+    setStops((prev) => 
+      prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
+    );
+
+    // THE FIX: Actually save the data to Directus
+    try {
+      await updateStopInDB(id, updates); 
+      console.log(`✅ Stop ${id} saved successfully.`);
+      
+      // Refresh parent metadata (budget, etc)
+      handleAutoSave(); 
+    } catch (error) {
+      console.error("❌ Failed to save stop:", error);
+      // Optional: Revert local state if save fails
+    }
+};
   // #endregion
 
   // #region --- DRAG & DROP HANDLER ---
-  function handleDragEnd(event: DragEndEvent) {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setStops((currentStops) => {
-        const oldIndex = currentStops.findIndex((s) => s.id === active.id);
-        const newIndex = currentStops.findIndex((s) => s.id === over.id);
+      const oldIndex = stops.findIndex((stop) => stop.id === active.id);
+      const newIndex = stops.findIndex((stop) => stop.id === over.id);
 
-        const reordered = arrayMove(currentStops, oldIndex, newIndex);
+      const reorderedStops = arrayMove(stops, oldIndex, newIndex).map((stop, index) => ({
+        ...stop,
+        sort: index + 1, 
+      }));
 
-        const updatedWithSort = reordered.map((stop, index) => ({
-          ...stop,
-          sort: index + 1,
-        }));
+      // Optimistic UI update (Instant snapping)
+      setStops(reorderedStops);
 
-        triggerSortSave(updatedWithSort);
-        return updatedWithSort;
-      });
+      try {
+        // Send the new sort order to the database behind the scenes
+        await updateStopsBatch(reorderedStops);
+        console.log("✅ Sort order saved to database.");
+      } catch (error) {
+        console.error("Failed to save sort order:", error);
+        // If it fails, revert the optimistic update
+        setStops(stops); 
+      }
     }
-  }
+  };
   // #endregion
-  
+
   return (
     <div className="StopsList_wrapper">
-      <h2>Route Order</h2>
+      <h2>
+        Itinerary Stops 
+        {isCalculating && <span style={{fontSize: '0.8em', color: 'var(--success-teal)', marginLeft: '10px'}}>(Calculating Route...)</span>}
+      </h2>
       
-      <DndContext 
-        collisionDetection={closestCenter} 
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext 
-          items={stops.map(s => s.id)} 
-          strategy={verticalListSortingStrategy}
-        >
-          {stops.map((stop) => (
-            <StopItem 
-              key={stop.id} 
-              id={stop.id} 
-              label={stop.name} 
-              type={stop.type} 
-              note={stop.note ?? ''} 
-              stay={stop.stay_time} 
-              morning_depart={stop.morning_depart}
-              budget={stop.budget}
-              lat={stop.lat} 
-              lng={stop.lng} 
-              onSave={handleUpdateStopData}
-              onDelete={handleDeleteStop} 
-              arrivalTime="--:--" 
-              departureTime="--:--"
-            />
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+          
+          {calculatedStops.map((stop, index) => (
+            <React.Fragment key={stop.id}>
+              
+              <StopItem 
+                id={stop.id} 
+                label={stop.name} 
+                type={stop.type} 
+                note={stop.note || ""} 
+                stay={stop.stay_time} 
+                morning_depart={stop.morning_depart}
+                budget={stop.budget} 
+                lat={stop.lat} 
+                lng={stop.lng} 
+                arrivalTime={stop.arrival_time} 
+                departureTime={stop.departure_time} 
+                onSave={handleUpdateStopData} 
+                onDelete={handleDeleteStop}
+              />
+
+              {/* THE IN-BETWEEN ROUTE CONNECTOR UI */}
+              {index < calculatedStops.length - 1 && stop.drive_to_next_miles !== null && stop.drive_to_next_miles !== undefined && (
+                <div className="Route_Connector">
+                  <div className="Route_Line"></div>
+                  <div className="Route_Stats">
+                    <Car size={14} />
+                    <span>{stop.drive_to_next_minutes} min</span>
+                    <span className="Route_Dot">•</span>
+                    <span>{stop.drive_to_next_miles.toFixed(1)} mi</span>
+                  </div>
+                </div>
+              )}
+
+            </React.Fragment>
           ))}
+
         </SortableContext>
       </DndContext>
+
+      <button className="StopsList_AddButton" onClick={handleAddStop}>
+        + Add New Stop
+      </button>
     </div>
   );
 };
@@ -157,8 +281,8 @@ export const StopsList: React.FC<StopsListProps> = ({ stops, setStops }) => {
    ========================================================================== */
 // #region --- TODOS ---
 /**
- * TODO: Integrate "Time Ripple" values into the arrivalTime/departureTime props.
- * TODO: Add a "Delete Stop" confirmation modal.
- * TODO: Implement a "Quick Search" for adding new locations by name.
+ * TODO: Integrate Mapbox Places Autocomplete inside StopItem so users can search real locations.
+ * TODO: Add a '+' button directly on the Route_Connector to insert a stop exactly between two items.
+ * TODO: Implement alternative travel modes (walking, transit, biking) toggle in the Route_Stats.
  */
 // #endregion
