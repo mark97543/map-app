@@ -5,6 +5,7 @@ import { StopItem } from "./StopItem";
 import { type Stop } from "../ItinEdit";
 import {updateStopsBatch} from '../../../services/api'
 import { type UniqueIdentifier } from "@dnd-kit/core";
+import { Notebook } from "lucide-react";
 
 interface StopsListProps {
   stops: Stop[]; 
@@ -14,10 +15,10 @@ interface StopsListProps {
 
 const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
 
-  const handleUpdateStopName = (id: UniqueIdentifier, newName: string, newType:string) => {
+  const handleUpdateStopName = (id: UniqueIdentifier, newName: string, newType:string, newNote:string) => {
     setStops((prevStops) => {
       const updated = prevStops.map((stop) => 
-        stop.id === id ? { ...stop, name: newName, type:newType } : stop
+        stop.id === id ? { ...stop, name: newName, type:newType, note:newNote } : stop
       );
       
 
@@ -34,7 +35,8 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         id: s.id,
         sort: s.sort,
         name:s.name,
-        type:s.type
+        type:s.type,
+        note:s.note
       }));
 
       // Example API call (Adjust based on your specific 'updateTrip' or 'updateStops' service)
@@ -83,7 +85,7 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         {/* 2. The Strategy: Tells the list how to behave (vertical) */}
         <SortableContext items={stops.map(s => s.id)} strategy={verticalListSortingStrategy}>
           {stops.map((stop) => (
-            <StopItem key={stop.id} id={stop.id} label={stop.name} type={stop.type} onSave={handleUpdateStopName}/>
+            <StopItem key={stop.id} id={stop.id} label={stop.name} type={stop.type} onSave={handleUpdateStopName} note={stop.note ?? ''}/>
           ))}
         </SortableContext>
       </DndContext>

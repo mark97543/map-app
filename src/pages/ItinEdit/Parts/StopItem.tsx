@@ -4,22 +4,24 @@ import { type UniqueIdentifier } from "@dnd-kit/core";
 import Button from "../../../assets/componets/Button/Button";
 import { useEffect,useState } from "react";
 import { STOP_TYPES } from "./Resources/stopTypes";
-import Dropdown from "../../../assets/componets/DropDown/DropDown";
+
 
 
 interface ItemProps{
   id:UniqueIdentifier;
   label:string;
-  onSave:(id:UniqueIdentifier, newLabel:string, newType:string)=>void;
+  onSave:(id:UniqueIdentifier, newLabel:string, newType:string, note:string)=>void;
   type:string;
+  note:string;
 }
 
-export function StopItem({id, label, onSave, type}:ItemProps){
+export function StopItem({id, label, onSave, type, note}:ItemProps){
   const [editItem, setEditItem]=useState(false);
   const [draftLabel, setDraftLabel] = useState(label);
   const [draftType, setDraftType]=useState(type);
   const typeConfig = STOP_TYPES[type] || STOP_TYPES.origin;
   const Icon = typeConfig.icon;
+  const [draftNote, setDraftNote]= useState(note)
   //The Hook
   const {
     attributes,   // Accessibility (ARIA)
@@ -34,7 +36,8 @@ export function StopItem({id, label, onSave, type}:ItemProps){
   useEffect(() => {
     setDraftLabel(label);
     setDraftType(type)
-  }, [label, type]);
+    setDraftNote(note)
+  }, [label, type, note]);
 
   // ⚡ ONLY the dynamic movement stays inline
   const dynamicStyle = {
@@ -43,13 +46,14 @@ export function StopItem({id, label, onSave, type}:ItemProps){
   };
 
   const handleSave = () =>{
-    onSave(id, draftLabel, draftType)
+    onSave(id, draftLabel, draftType, draftNote)
     setEditItem(false)
   }
 
   const cancelEdit = ()=>{
     setDraftLabel(label);
     setDraftType(type);
+    setDraftNote(note)
     setEditItem(!editItem)
   }
 
@@ -111,11 +115,27 @@ export function StopItem({id, label, onSave, type}:ItemProps){
             <p>{typeConfig.label}</p>
           </>
         )}
-
       </div>
 
 
+      {/*-----------Note --------------- */}
+      <div className="StopItem_note">
+        {editItem ? (
+          <div className="StopItem_noteInput_div">
+            <input 
+              value={draftNote}
+              className="StopItem_noteInput"
+              onChange={(e)=>setDraftNote(e.target.value)}
+            />
+          </div>
+        ):(
+          <>
+            
+            <p><i><b>Note: </b></i> {draftNote}</p>
+          </>
+        )}
 
+      </div>
 
 
 

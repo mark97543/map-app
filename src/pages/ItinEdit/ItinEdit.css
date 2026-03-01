@@ -111,13 +111,38 @@
 /* ==========================================================================
 5. TRIP NOTES DISPLAY & QUILL OVERRIDES
 ========================================================================== */
-.trip-notes-display {
-  text-align: left;
-  line-height: 1.8;
-  color: var(--text-main);
+.EDITNOTES_wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--primary-muted);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.trip-notes-view-container {
+  padding: 0 var(--space-md) var(--space-md);
   cursor: pointer;
-  min-height: 50px;
+  min-height: 120px;
+  width: 100%;
+}
+
+.EDITNOTES_wrapper h2 {
+  padding: var(--space-md) var(--space-md) 0;
+  margin-bottom: var(--space-sm);
+}
+
+.trip-notes-display {
+  line-height: 1.6;
+  color: var(--text-main);
   font-size: var(--font-lg);
+  margin: 0;
+}
+
+.ITIN_EDIT_note_placeholder {
+  color: var(--text-dim);
+  opacity: 0.6;
 }
 
 /* List Styles */
@@ -127,36 +152,38 @@
   color: var(--text-dim);
 }
 
-/* Quill Theme Overrides */
+/* Editing state container */
+.quill-editor-container {
+  width: 100%;
+}
+
+/* Quill Overrides */
 .ql-toolbar.ql-snow {
-  background-color: var(--bg-surface) !important;
-  border: 1px solid var(--primary-muted) !important;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background-color: var(--bg-dark) !important;
+  border: none !important;
+  border-top: 1px solid var(--primary-muted) !important;
+  border-bottom: 1px solid var(--primary-muted) !important;
 }
 
 .ql-container.ql-snow {
   background-color: var(--bg-dark) !important;
-  border: 1px solid var(--primary-muted) !important;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border: none !important;
+  font-family: inherit;
 }
 
 .ql-editor {
-  color: var(--text-main);
+  min-height: 250px;
   font-size: var(--font-lg);
-  min-height: 200px;
+  color: var(--text-main);
+  line-height: 1.6;
 }
 
-/* Icon Colors using your variables */
+/* Fix for Toolbar Icons - preventing the width:100% bug */
 .ql-snow .ql-stroke { stroke: var(--text-dim) !important; }
 .ql-snow .ql-fill { fill: var(--text-dim) !important; }
 .ql-snow .ql-picker { color: var(--text-dim) !important; }
 
-/* Interactive Hover state for icons */
-.ql-snow .ql-stroke:hover,
-.ql-snow .ql-picker:hover { 
-  stroke: var(--success-teal) !important; 
-  color: var(--success-teal) !important;
-}
+.ql-snow.ql-toolbar button:hover .ql-stroke { stroke: var(--success-teal) !important; }
 
 /* ==========================================================================
 6. DRAGGABLE CONTAINERS (Stops.tsx)
@@ -172,7 +199,7 @@
   display: grid;
   overflow: hidden;
   grid-template-columns: 25px 125px auto auto;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   margin: var(--space-sm) 0;
   background-color: var(--bg-surface);
   border: 1px solid var(--primary-muted);
@@ -277,7 +304,7 @@
   background-color: var(--primary-muted);
   margin: 5px 12px;
   flex-shrink: 0;
-  grid-row: 2/4;
+  grid-row: 2/5;
   grid-column: 2/3;
   overflow: hidden;
   justify-self: center;
@@ -316,4 +343,25 @@
   font-size: var(--font-md);
   width:100%;
   text-align: center;
+}
+
+.StopItem_note{
+  grid-row: 4/5;
+  grid-column: 3/5;
+  font-size: var(--font-lg);
+  padding: var(--space-xs);
+}
+
+.StopItem_noteInput{
+  font-size: var(--font-md);
+  font-family: inherit;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  width: 100%;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  outline: none;
+  resize: vertical;
+  margin-right: var(--space-md);
 }

@@ -1,6 +1,7 @@
 import type React from "react";
 import ReactQuill from 'react-quill-new';
 import { useRef, useEffect } from 'react';
+import 'react-quill-new/dist/quill.snow.css'; // Ensure styles are imported
 
 interface Note {
   noteEdit: boolean;
@@ -18,13 +19,9 @@ const TripNote: React.FC<Note> = ({
   handleAutoSave
 }) => {
   const quillRef = useRef<ReactQuill>(null);
-  
-  const isActuallyEmpty = !tempNote || tempNote === '<p><br></p>' || tempNote.trim() === '';
 
   useEffect(() => {
     if (noteEdit && quillRef.current) {
-      // Use a tiny timeout to ensure the editor is fully in the DOM 
-      // before trying to grab the selection range.
       const timer = setTimeout(() => {
         quillRef.current?.focus();
       }, 50);
@@ -32,45 +29,46 @@ const TripNote: React.FC<Note> = ({
     }
   }, [noteEdit]);
 
-  const handleBlur = (range: any, source: any, editor: any) => {
-    // Quill's onBlur provides the 'range'. If range is null, it means 
-    // focus has truly left the editor area.
+  const handleBlur = () => {
+    // Small delay to check if focus moved to the toolbar
     setTimeout(() => {
-      // We check document.activeElement to see if we clicked the toolbar.
-      // If the new focus is NOT a quill toolbar button, we save.
       const isToolbar = document.activeElement?.closest('.ql-toolbar');
       if (!isToolbar) {
         setNoteEdit(false);
         handleAutoSave();
       }
-    }, 100);
+    }, 150);
   };
 
   return (
     <div className="EDITNOTES_wrapper">
       <h2>Trip Notes</h2>
+      
       {!noteEdit ? (
-        <div onDoubleClick={() => setNoteEdit(true)} style={{ cursor: 'pointer' }}>
-          {tempNote && tempNote !== "<p></p>" ? (
+        <div 
+          className="trip-notes-view-container" 
+          onDoubleClick={() => setNoteEdit(true)}
+        >
+          {tempNote && tempNote !== "<p><br></p>" && tempNote !== "<p></p>" ? (
             <div
               className="trip-notes-display"
               dangerouslySetInnerHTML={{ __html: tempNote }}
             />
           ) : (
-            <div className="ITIN_EDIT_note">
+            <div className="ITIN_EDIT_note_placeholder">
               <p><i>No notes yet. Double-click here to add some!</i></p>
             </div>
           )}
         </div>
       ) : (
-        <div className="trip-notes-display">
+        <div className="quill-editor-container">
           <ReactQuill
             ref={quillRef}
             theme="snow"
             value={tempNote}
             onChange={setTempNote}
-            onBlur={handleBlur} // Use the specialized Quill blur handler
-            placeholder="Add Some Trip Notes!"
+            onBlur={handleBlur}
+            placeholder="Add Some Trip Notes..."
           />
         </div>
       )}
