@@ -14,10 +14,10 @@ interface StopsListProps {
 
 const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
 
-  const handleUpdateStopName = (id: UniqueIdentifier, newName: string, newType:string, newNote:string) => {
+  const handleUpdateStopName = (id: UniqueIdentifier, newName: string, newType:string, newNote:string, newStay:number) => {
     setStops((prevStops) => {
       const updated = prevStops.map((stop) => 
-        stop.id === id ? { ...stop, name: newName, type:newType, note:newNote } : stop
+        stop.id === id ? { ...stop, name: newName, type:newType, note:newNote, stay_time:newStay } : stop
       );
       
 
@@ -35,7 +35,8 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         sort: s.sort,
         name:s.name,
         type:s.type,
-        note:s.note
+        note:s.note,
+        stay_time:s.stay_time
       }));
 
       // Example API call (Adjust based on your specific 'updateTrip' or 'updateStops' service)

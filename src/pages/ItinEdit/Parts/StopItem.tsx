@@ -10,10 +10,11 @@ import { minToHHMM } from "./Resources/TimeFunc";
 interface ItemProps{
   id:UniqueIdentifier;
   label:string;
-  onSave:(id:UniqueIdentifier, newLabel:string, newType:string, note:string)=>void;
+  onSave:(id:UniqueIdentifier, newLabel:string, newType:string, note:string, newStay:number)=>void;
   type:string;
   note:string;
   stay:number;
+  // budget:number;
 }
 
 export function StopItem({id, label, onSave, type, note, stay}:ItemProps){
@@ -49,7 +50,7 @@ export function StopItem({id, label, onSave, type, note, stay}:ItemProps){
   };
 
   const handleSave = () =>{
-    onSave(id, draftLabel, draftType, draftNote)
+    onSave(id, draftLabel, draftType, draftNote, draftStay)
     setEditItem(false)
   }
 
@@ -145,13 +146,26 @@ export function StopItem({id, label, onSave, type, note, stay}:ItemProps){
       
       <div className="StopItem_StayBudget">
         {editItem ? (
-          <>
-            
-          </>
-        ):(
-          <>
-            <p>⏳<i><b>Stay: </b></i>{minToHHMM(draftStay)}</p>
-          </>
+          <div className="StopItem_StayInput_Wrapper">
+            <span className="StayInput_Icon">⏳</span>
+            <input
+              type="number"
+              value={draftStay}
+              onChange={(e) => setDraftStay(Number(e.target.value))}
+              className="StopItem_StayInput"
+              placeholder="0"
+              min="0"
+            />
+            <span className="StayInput_Suffix">min</span>
+          </div>
+        ) : (
+          <div className="StopItem_StayDisplay">
+            <p>
+              <span className="StayDisplay_Icon">⏳</span>
+              <i><b>Stay: </b></i>
+              {minToHHMM(draftStay)}
+            </p>
+          </div>
         )}
       </div>
 
