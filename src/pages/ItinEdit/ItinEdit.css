@@ -171,7 +171,7 @@
   padding: 0;
   display: grid;
   overflow: hidden;
-  grid-template-columns: 25px auto auto auto;
+  grid-template-columns: 25px 125px auto auto;
   grid-template-rows: auto auto auto auto;
   margin: var(--space-sm) 0;
   background-color: var(--bg-surface);
@@ -263,3 +263,57 @@
   border-color: var(--success-teal);
 }
 
+/*----------Icon Column-------------- */
+
+.StopItem_Icon{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid var(--bg-surface);
+  background-color: var(--primary-muted);
+  margin: 5px 12px;
+  flex-shrink: 0;
+  grid-row: 2/4;
+  grid-column: 2/3;
+  overflow: hidden;
+  justify-self: center;
+  align-self: center;
+  padding: 0;
+  line-height: 1;
+  svg {
+    display: block;
+    margin-bottom: 4px; /* Manual gap control instead of flex-gap */
+  }
+}
+
+.StopItem_TypeSelect {
+  /* background: var(--primary-main); */
+  background: transparent;
+  color: var(--text-main);
+  border: none;
+  width: 100%;
+  max-width: 200px;
+  height: 50px;
+  appearance: none; /* Removes the default arrow for a cleaner look */
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  text-transform: uppercase;
+  font-size: calc(var(--font-md));
+  text-align-last: center;
+}
+
+.StopItem_TypeSelect:hover {
+  background: var(--primary-main);
+}
+
+.StopItem_Icon p{
+  font-size: var(--font-md);
+  width:100%;
+  text-align: center;
+}

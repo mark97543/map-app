@@ -14,10 +14,10 @@ interface StopsListProps {
 
 const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
 
-  const handleUpdateStopName = (id: UniqueIdentifier, newName: string) => {
+  const handleUpdateStopName = (id: UniqueIdentifier, newName: string, newType:string) => {
     setStops((prevStops) => {
       const updated = prevStops.map((stop) => 
-        stop.id === id ? { ...stop, name: newName } : stop
+        stop.id === id ? { ...stop, name: newName, type:newType } : stop
       );
       
 
@@ -33,7 +33,8 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
       const payload = updatedStops.map(s => ({
         id: s.id,
         sort: s.sort,
-        name:s.name
+        name:s.name,
+        type:s.type
       }));
 
       // Example API call (Adjust based on your specific 'updateTrip' or 'updateStops' service)
@@ -82,7 +83,7 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         {/* 2. The Strategy: Tells the list how to behave (vertical) */}
         <SortableContext items={stops.map(s => s.id)} strategy={verticalListSortingStrategy}>
           {stops.map((stop) => (
-            <StopItem key={stop.id} id={stop.id} label={stop.name} onSave={handleUpdateStopName}/>
+            <StopItem key={stop.id} id={stop.id} label={stop.name} type={stop.type} onSave={handleUpdateStopName}/>
           ))}
         </SortableContext>
       </DndContext>

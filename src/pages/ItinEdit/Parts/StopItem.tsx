@@ -3,17 +3,23 @@ import { CSS } from "@dnd-kit/utilities";
 import { type UniqueIdentifier } from "@dnd-kit/core"; 
 import Button from "../../../assets/componets/Button/Button";
 import { useEffect,useState } from "react";
+import { STOP_TYPES } from "./Resources/stopTypes";
+import Dropdown from "../../../assets/componets/DropDown/DropDown";
 
 
 interface ItemProps{
   id:UniqueIdentifier;
   label:string;
-  onSave:(id:UniqueIdentifier, newLabel:string)=>void;
+  onSave:(id:UniqueIdentifier, newLabel:string, newType:string)=>void;
+  type:string;
 }
 
-export function StopItem({id, label, onSave}:ItemProps){
+export function StopItem({id, label, onSave, type}:ItemProps){
   const [editItem, setEditItem]=useState(false);
   const [draftLabel, setDraftLabel] = useState(label);
+  const [draftType, setDraftType]=useState(type);
+  const typeConfig = STOP_TYPES[type] || STOP_TYPES.origin;
+  const Icon = typeConfig.icon;
   //The Hook
   const {
     attributes,   // Accessibility (ARIA)
@@ -27,7 +33,8 @@ export function StopItem({id, label, onSave}:ItemProps){
   //Keep draft in sync if the label changes from outside (e.g. database refresh)
   useEffect(() => {
     setDraftLabel(label);
-  }, [label]);
+    setDraftType(type)
+  }, [label, type]);
 
   // ⚡ ONLY the dynamic movement stays inline
   const dynamicStyle = {
@@ -36,16 +43,13 @@ export function StopItem({id, label, onSave}:ItemProps){
   };
 
   const handleSave = () =>{
-    onSave(id, draftLabel)
+    onSave(id, draftLabel, draftType)
     setEditItem(false)
-  }
-
-  const editClick = (selection:UniqueIdentifier) =>{
-    setEditItem(!editItem)
   }
 
   const cancelEdit = ()=>{
     setDraftLabel(label);
+    setDraftType(type);
     setEditItem(!editItem)
   }
 
@@ -70,7 +74,7 @@ export function StopItem({id, label, onSave}:ItemProps){
             className="StopItem_input"
           />
         ):(
-          <strong>{label}</strong>
+          <strong>{draftLabel}</strong>
         )}
         {editItem ? (
             <>
@@ -83,8 +87,32 @@ export function StopItem({id, label, onSave}:ItemProps){
 
       </div>
 
+      {/*--------------Stop Type Area------------------------- */}
+      <div className="StopItem_Icon">
+        {editItem ? (
+          <select 
+            value={draftType} 
+            onChange={(e) => setDraftType(e.target.value)}
+            className="StopItem_TypeSelect"
+          >
+            {Object.entries(STOP_TYPES).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value.label}
+              </option>
+            ))}
+          </select>
+        ):(
+          <>
+            <Icon
+              size={40}
+              color={typeConfig.color}
+              strokeWidth={2.5}
+            />
+            <p>{typeConfig.label}</p>
+          </>
+        )}
 
-
+      </div>
 
 
 
