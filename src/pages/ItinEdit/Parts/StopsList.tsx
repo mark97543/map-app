@@ -5,7 +5,6 @@ import { StopItem } from "./StopItem";
 import { type Stop } from "../ItinEdit";
 import {updateStopsBatch} from '../../../services/api'
 import { type UniqueIdentifier } from "@dnd-kit/core";
-import { Notebook } from "lucide-react";
 
 interface StopsListProps {
   stops: Stop[]; 
@@ -85,7 +84,7 @@ const StopsList: React.FC<StopsListProps> =({stops, setStops})=>{
         {/* 2. The Strategy: Tells the list how to behave (vertical) */}
         <SortableContext items={stops.map(s => s.id)} strategy={verticalListSortingStrategy}>
           {stops.map((stop) => (
-            <StopItem key={stop.id} id={stop.id} label={stop.name} type={stop.type} onSave={handleUpdateStopName} note={stop.note ?? ''}/>
+            <StopItem key={stop.id} id={stop.id} stay={stop.stay_time} label={stop.name} type={stop.type} onSave={handleUpdateStopName} note={stop.note ?? ''}/>
           ))}
         </SortableContext>
       </DndContext>

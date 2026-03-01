@@ -4,7 +4,7 @@ import { type UniqueIdentifier } from "@dnd-kit/core";
 import Button from "../../../assets/componets/Button/Button";
 import { useEffect,useState } from "react";
 import { STOP_TYPES } from "./Resources/stopTypes";
-
+import { minToHHMM } from "./Resources/TimeFunc";
 
 
 interface ItemProps{
@@ -13,15 +13,17 @@ interface ItemProps{
   onSave:(id:UniqueIdentifier, newLabel:string, newType:string, note:string)=>void;
   type:string;
   note:string;
+  stay:number;
 }
 
-export function StopItem({id, label, onSave, type, note}:ItemProps){
+export function StopItem({id, label, onSave, type, note, stay}:ItemProps){
   const [editItem, setEditItem]=useState(false);
   const [draftLabel, setDraftLabel] = useState(label);
   const [draftType, setDraftType]=useState(type);
   const typeConfig = STOP_TYPES[type] || STOP_TYPES.origin;
   const Icon = typeConfig.icon;
   const [draftNote, setDraftNote]= useState(note)
+  const [draftStay, setDraftStay]=useState(stay)
   //The Hook
   const {
     attributes,   // Accessibility (ARIA)
@@ -37,7 +39,8 @@ export function StopItem({id, label, onSave, type, note}:ItemProps){
     setDraftLabel(label);
     setDraftType(type)
     setDraftNote(note)
-  }, [label, type, note]);
+    setDraftStay(stay)
+  }, [label, type, note, stay]);
 
   // ⚡ ONLY the dynamic movement stays inline
   const dynamicStyle = {
@@ -54,6 +57,7 @@ export function StopItem({id, label, onSave, type, note}:ItemProps){
     setDraftLabel(label);
     setDraftType(type);
     setDraftNote(note)
+    setDraftStay(stay)
     setEditItem(!editItem)
   }
 
@@ -137,8 +141,19 @@ export function StopItem({id, label, onSave, type, note}:ItemProps){
 
       </div>
 
-
-
+      {/*------Stay and Budget */}
+      
+      <div className="StopItem_StayBudget">
+        {editItem ? (
+          <>
+            
+          </>
+        ):(
+          <>
+            <p>⏳<i><b>Stay: </b></i>{minToHHMM(draftStay)}</p>
+          </>
+        )}
+      </div>
 
 
 
@@ -147,4 +162,3 @@ export function StopItem({id, label, onSave, type, note}:ItemProps){
     </div>
   )
 }
-

@@ -122,14 +122,14 @@
 }
 
 .trip-notes-view-container {
-  padding: 0 var(--space-md) var(--space-md);
+  /* padding: 0 var(--space-md) var(--space-md); */
   cursor: pointer;
   min-height: 120px;
   width: 100%;
 }
 
 .EDITNOTES_wrapper h2 {
-  padding: var(--space-md) var(--space-md) 0;
+  /* padding: var(--space-md) var(--space-md) 0; */
   margin-bottom: var(--space-sm);
 }
 
@@ -364,4 +364,11 @@
   outline: none;
   resize: vertical;
   margin-right: var(--space-md);
+}
+
+.StopItem_StayBudget{
+  font-size: var(--font-lg);
+  padding: var(--space-sm);
+  grid-row: 2/3;
+  grid-column: 3/4;
 }
