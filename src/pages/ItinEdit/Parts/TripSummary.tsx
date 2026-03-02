@@ -1,17 +1,20 @@
-import {type Trip} from '../ItinEdit'
+import { useTripEdit } from '../../../context/TripEditContext';
+
 
 interface SlugTitleProps {
-  tripDetails: Trip;
-  summaryEdit:boolean;
-  setSummaryEdit:(val: boolean) => void;
-  handleAutoSave: () => Promise<void>;
-  tempSummary:string;
-  setTempSummary:(val: string) => void;
+
 }
 
 
-const TripSummary: React.FC<SlugTitleProps> = ({tripDetails,summaryEdit,setSummaryEdit, handleAutoSave, tempSummary, setTempSummary})=>{
+const TripSummary: React.FC<SlugTitleProps> = ({})=>{
 
+  const {
+    handleAutoSave,
+    summaryEdit,
+    setSummaryEdit,
+    tempSummary, 
+    setTempSummary
+  } = useTripEdit();
 
   return(
     <div className="TRIPSUMMARY_wrapper">

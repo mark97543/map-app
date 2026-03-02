@@ -1,26 +1,22 @@
-import { type Trip } from "../ItinEdit";
+import { useTripEdit } from "../../../context/TripEditContext";
 
 interface SlugTitleProps {
-  titleEdit: boolean;
-  tripDetails:Trip;
-  tempId: string;
-  setTempId: (val: string) => void;
-  tempTitle: string;
-  setTempTitle: (val: string) => void;
-  setTitleEdit: (val: boolean) => void;
-  handleAutoSave: () => Promise<void>;
+
 }
 
-const SlugTitle: React.FC<SlugTitleProps> = ({
-  titleEdit,
-  tripDetails,
-  setTempId,
-  setTempTitle,
-  tempId,
-  tempTitle,
-  handleAutoSave,
-  setTitleEdit
-}) => {
+const SlugTitle: React.FC<SlugTitleProps> = ({}) => {
+  const {
+    tripDetails,
+    titleEdit,
+    setTitleEdit,
+    setTempId,
+    tempId,
+    setTempTitle,
+    tempTitle,
+    handleAutoSave
+  } =useTripEdit();
+
+  if (!tripDetails) return <div className="loading-placeholder">Loading Title...</div>;
 
   return(
     <div className='EDIT_Details'>

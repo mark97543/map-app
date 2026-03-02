@@ -8,13 +8,14 @@
 import './ItinEdit.css'
 import { useParams } from 'react-router-dom'
 import { useDashboard } from '../../context/DashboardContext'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { getTripById, updateTrip } from '../../services/api'
 import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary'
 import TripNote from './Parts/TripNote'
 import { StopsList } from './Parts/StopsList'
 import { type UniqueIdentifier } from '@dnd-kit/core';
+import { useTripEdit } from '../../context/TripEditContext'
 
 // #region --- INTERFACES ---
 export interface Stop {
@@ -48,24 +49,21 @@ export interface Trip {
 // #endregion
 
 const ItinEdit = () => {
+  const {
+    loading, 
+    setLoading,
+    tripDetails,
+    setTripDetails,
+    setTempId,
+    setTempTitle,
+    setTempSummary,
+    setTempNote,
+    tempSegments,
+    setTempSegments
+  } = useTripEdit();
+
   const { slug } = useParams<{ slug: string }>();
   const { triggerRefresh } = useDashboard();
-
-  // --- Core Data ---
-  const [tripDetails, setTripDetails] = useState<Trip | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // --- UI Toggle States ---
-  const [titleEdit, setTitleEdit] = useState(false);
-  const [summaryEdit, setSummaryEdit] = useState(false);
-  const [noteEdit, setNoteEdit] = useState(false);
-
-  // --- Draft/Temp States (User Interactions) ---
-  const [tempId, setTempId] = useState('');
-  const [tempTitle, setTempTitle] = useState('');
-  const [tempSummary, setTempSummary] = useState('');
-  const [tempNote, setTempNote] = useState<string>('');
-  const [tempSegments, setTempSegments] = useState<Stop[]>([]);
 
   // #region --- FETCH LOGIC ---
   useEffect(() => {
@@ -95,7 +93,7 @@ const ItinEdit = () => {
 
   // #region --- BUDGET MATH & WATCHER ---
   // 1. Calculate the real-time total from the visible UI segments
-  const totalBudget = tempSegments.reduce((runningTotal: number, currentStop: any) => {
+  const totalBudget = (tempSegments ?? []).reduce((runningTotal: number, currentStop: any) => {
     const stopBudget = Number(currentStop.budget) || 0;
     return runningTotal + stopBudget;
   }, 0);
@@ -124,90 +122,21 @@ const ItinEdit = () => {
   }, [totalBudget, tripDetails?.id, tripDetails?.total_budget, triggerRefresh]);
   // #endregion
 
-  // #region --- AUTO-SAVE LOGIC (Metadata only) ---
-  const handleAutoSave = async () => {
-    setTitleEdit(false);
-    setSummaryEdit(false);
-    setNoteEdit(false);
-
-    if (!tripDetails?.id) return;
-
-    // Change Detection for text fields (Budget is handled by the Watcher above)
-    const hasChanges = 
-      tempId !== tripDetails.trip_id || 
-      tempTitle !== tripDetails.title || 
-      tempSummary !== tripDetails.trip_summary || 
-      tempNote !== tripDetails.trip_notes;
-
-    if (hasChanges) {
-      try {
-        const payload = { 
-          trip_id: tempId, 
-          title: tempTitle,
-          trip_summary: tempSummary,
-          trip_notes: tempNote
-        };
-
-        const updated = await updateTrip(tripDetails.id, payload);
-
-        if (updated) {
-          setTripDetails(updated); 
-          triggerRefresh();
-          console.log("✅ Trip metadata synced with server.");
-        }
-      } catch (err) {
-        // Error Recovery (Rollback UI to match DB)
-        setTempId(tripDetails.trip_id);
-        setTempTitle(tripDetails.title);
-        setTempSummary(tripDetails.trip_summary);
-        setTempNote(tripDetails.trip_notes);
-        console.error("Save failed:", err);
-      }
-    }
-  };
-  // #endregion
-
   if (loading) return <div className="loading-screen">Loading Trip Details...</div>;
   if (!tripDetails) return <div className="error-screen">Trip not found.</div>;
 
   return (
     <div className='EDIT_wrapper'>
-      <SlugTitle 
-        titleEdit={titleEdit}
-        tripDetails={tripDetails}
-        setTempId={setTempId}
-        setTempTitle={setTempTitle}
-        tempId={tempId}
-        tempTitle={tempTitle}
-        handleAutoSave={handleAutoSave}
-        setTitleEdit={setTitleEdit}
-      />
+   
+      <SlugTitle />
 
-      <TripSummary
-        tripDetails={tripDetails}
-        summaryEdit={summaryEdit}
-        setSummaryEdit={setSummaryEdit}
-        handleAutoSave={handleAutoSave}
-        tempSummary={tempSummary}
-        setTempSummary={setTempSummary}
-      />
+      <TripSummary/>
 
-      <TripNote 
-        noteEdit={noteEdit}
-        setNoteEdit={setNoteEdit}
-        tempNote={tempNote}
-        setTempNote={setTempNote}
-        handleAutoSave={handleAutoSave}
-      />
+      <TripNote />
 
       <p className='ITIN_EDIT_note'><i>Double Click An Item To Edit</i></p>
 
-      <StopsList
-        stops={tempSegments}
-        setStops={setTempSegments}
-        handleAutoSave={handleAutoSave} 
-        tripId={tripDetails.id} 
-      />
+      <StopsList/>
 
     </div>
   )

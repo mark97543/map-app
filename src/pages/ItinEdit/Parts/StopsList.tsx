@@ -27,17 +27,23 @@ import { type Stop } from "../ItinEdit";
 import { createStopInDB, deleteStopFromDB, updateStopsBatch, updateStopInDB } from '../../../services/api'; 
 import { fetchBatchDriveData, addMinutes } from "./Resources/RouteEngine";
 import { Car } from "lucide-react"; 
+import { useTripEdit } from "../../../context/TripEditContext";
 
 // #region --- INTERFACES ---
 interface StopsListProps {
-  tripId: number | string;
-  stops: Stop[];
-  setStops: React.Dispatch<React.SetStateAction<Stop[]>>;
-  handleAutoSave: () => Promise<void>;
+
 }
 // #endregion
 
-export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, handleAutoSave }) => {
+export const StopsList: React.FC<StopsListProps> = ({ }) => {
+  const {
+    tripDetails,
+    handleAutoSave,
+    tempSegments,
+    setTempSegments
+  } = useTripEdit();
+
+
   const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -57,13 +63,13 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
   // #region --- TIME RIPPLE ENGINE ---
   useEffect(() => {
     const runTimeRipple = async () => {
-      if (stops.length === 0) {
+      if (tempSegments.length === 0) {
         setCalculatedStops([]);
         return;
       }
 
       setIsCalculating(true);
-      const newCalculatedStops = JSON.parse(JSON.stringify(stops)); 
+      const newCalculatedStops = JSON.parse(JSON.stringify(tempSegments)); 
       
       // 1. GATHER COORDINATES FOR BATCH API CALL
       const validCoords = newCalculatedStops
@@ -131,14 +137,14 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [stops]); 
+  }, [tempSegments]); 
   // #endregion
 
   // #region --- CRUD HANDLERS ---
   const handleAddStop = async () => {
     const blankStop = {
-      trip_id: tripId, 
-      sort: stops.length + 1,
+      trip_id: tripDetails?.id, 
+      sort: tempSegments.length + 1,
       name: "New Stop",
       type: "origin", 
       note: "",
@@ -151,7 +157,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
 
     try {
       const newStopFromDB = await createStopInDB(blankStop);
-      setStops((prev) => [...prev, newStopFromDB]);
+      setTempSegments((prev) => [...prev, newStopFromDB]);
       console.log("✅ New stop created.");
     } catch (error) {
       console.error("❌ Failed to add new stop", error);
@@ -165,7 +171,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
 
     try {
       await deleteStopFromDB(stopId);
-      setStops((prev) => prev.filter((s) => s.id !== stopId));
+      setTempSegments((prev) => prev.filter((s) => s.id !== stopId));
       handleAutoSave(); 
     } catch (error) {
       console.error("Failed to delete stop:", error);
@@ -174,7 +180,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
 
   const handleUpdateStopData = async (id: UniqueIdentifier, updates: Partial<Stop>) => {
     // Optimistic UI update (makes the screen feel fast)
-    setStops((prev) => 
+    setTempSegments((prev) => 
       prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
     );
 
@@ -197,16 +203,16 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = stops.findIndex((stop) => stop.id === active.id);
-      const newIndex = stops.findIndex((stop) => stop.id === over.id);
+      const oldIndex = tempSegments.findIndex((stop) => stop.id === active.id);
+      const newIndex = tempSegments.findIndex((stop) => stop.id === over.id);
 
-      const reorderedStops = arrayMove(stops, oldIndex, newIndex).map((stop, index) => ({
+      const reorderedStops = arrayMove(tempSegments, oldIndex, newIndex).map((stop, index) => ({
         ...stop,
         sort: index + 1, 
       }));
 
       // Optimistic UI update (Instant snapping)
-      setStops(reorderedStops);
+      setTempSegments(reorderedStops);
 
       try {
         // Send the new sort order to the database behind the scenes
@@ -215,7 +221,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
       } catch (error) {
         console.error("Failed to save sort order:", error);
         // If it fails, revert the optimistic update
-        setStops(stops); 
+        setTempSegments(tempSegments); 
       }
     }
   };
@@ -229,7 +235,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
       </h2>
       
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={tempSegments.map((s) => s.id)} strategy={verticalListSortingStrategy}>
           
           {calculatedStops.map((stop, index) => (
             <React.Fragment key={stop.id}>
@@ -281,8 +287,7 @@ export const StopsList: React.FC<StopsListProps> = ({ tripId, stops, setStops, h
    ========================================================================== */
 // #region --- TODOS ---
 /**
- * TODO: Integrate Mapbox Places Autocomplete inside StopItem so users can search real locations.
  * TODO: Add a '+' button directly on the Route_Connector to insert a stop exactly between two items.
- * TODO: Implement alternative travel modes (walking, transit, biking) toggle in the Route_Stats.
+ * TODO: When Dragging there is a snapback then rearange 
  */
 // #endregion

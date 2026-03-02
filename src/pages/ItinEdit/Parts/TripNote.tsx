@@ -8,22 +8,21 @@ import type React from "react";
 import ReactQuill from 'react-quill-new';
 import { useRef, useEffect } from 'react';
 import 'react-quill-new/dist/quill.snow.css'; 
+import { useTripEdit } from "../../../context/TripEditContext";
 
 interface NoteProps {
-  noteEdit: boolean;
-  setNoteEdit: (val: boolean) => void;
-  tempNote: string;
-  setTempNote: (val: string) => void;
-  handleAutoSave: () => Promise<void>;
+
 }
 
-const TripNote: React.FC<NoteProps> = ({
-  noteEdit,
-  setNoteEdit,
-  tempNote,
-  setTempNote,
-  handleAutoSave
-}) => {
+const TripNote: React.FC<NoteProps> = ({}) => {
+  const {
+    handleAutoSave,
+    noteEdit,
+    setNoteEdit,
+    tempNote,
+    setTempNote,
+  } = useTripEdit();
+
   const quillRef = useRef<ReactQuill>(null);
 
   // #region --- FOCUS MANAGEMENT ---
