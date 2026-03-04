@@ -13,7 +13,7 @@ import { Copy, Check,Trash2 } from "lucide-react";
 import Button from "../../../assets/componets/Button/Button";
 import { STOP_TYPES } from "./Resources/stopTypes";
 import { minToHHMM } from "./Resources/TimeFunc";
-import { type Stop } from "../ItinEdit";
+import { type Stop } from "../../../context/TripEditContext";
 
 // 🎯 The "Brain" for a single Row
 interface ItemProps {

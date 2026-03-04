@@ -14,6 +14,7 @@ import Toggle from '../../assets/componets/Toggle/Toggle';
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react'; 
 import { createTrip, deleteTripFromDB } from '../../services/api'; 
+import { useTripEdit } from '../../context/TripEditContext';
 
 function ItinSelect(){
   const {loading, allTrips, fetchInitialData, refresh} = useDashboard();
@@ -21,6 +22,7 @@ function ItinSelect(){
   const [showArchived, setShowArchived]=useState(false)
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
+  
   
   // #region --- DATA FETCHING ---
   useEffect(() => {

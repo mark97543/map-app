@@ -22,27 +22,22 @@ import {
   sortableKeyboardCoordinates, 
   verticalListSortingStrategy 
 } from "@dnd-kit/sortable";
+
 import { StopItem } from "./StopItem";
-import { type Stop } from "../ItinEdit";
+import TravelSegment from "./TravelSegment"; // NEW: Import the standalone component
+import { type Stop } from "../../../context/TripEditContext";
 import { createStopInDB, deleteStopFromDB, updateStopsBatch, updateStopInDB } from '../../../services/api'; 
 import { fetchBatchDriveData, addMinutes } from "./Resources/RouteEngine";
-import { Car } from "lucide-react"; 
 import { useTripEdit } from "../../../context/TripEditContext";
 
-// #region --- INTERFACES ---
-interface StopsListProps {
-
-}
-// #endregion
-
-export const StopsList: React.FC<StopsListProps> = ({ }) => {
+export const StopsList: React.FC = () => {
   const {
     tripDetails,
     handleAutoSave,
     tempSegments,
-    setTempSegments
+    setTempSegments,
+    addWaypoint 
   } = useTripEdit();
-
 
   const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -51,7 +46,7 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // Requires 5px of movement before dragging starts (allows clicking inner buttons)
+        distance: 5, 
       },
     }),
     useSensor(KeyboardSensor, {
@@ -71,33 +66,28 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
       setIsCalculating(true);
       const newCalculatedStops = JSON.parse(JSON.stringify(tempSegments)); 
       
-      // 1. GATHER COORDINATES FOR BATCH API CALL
       const validCoords = newCalculatedStops
         .filter((s: any) => 
           s.lat !== null && 
           s.lng !== null && 
           s.lat !== 0 && 
-          s.lng !== 0 // Add this to prevent Mapbox errors
+          s.lng !== 0 
         )
         .map((s: any) => ({ lat: s.lat, lng: s.lng }));
 
-      // 2. FETCH ALL DRIVE TIMES IN ONE CALL (MAPBOX)
       let driveLegs: any[] = [];
       if (validCoords.length >= 2) {
         driveLegs = await fetchBatchDriveData(validCoords);
       }
 
-      // 3. RUN THE TIME RIPPLE MATH
       let currentDepartureTime = newCalculatedStops[0].morning_depart || "08:00";
       let validCoordIndex = 0; 
 
       for (let i = 0; i < newCalculatedStops.length; i++) {
         const stop = newCalculatedStops[i];
 
-        // --- Arrival Time ---
         stop.arrival_time = i === 0 ? "--:--" : currentDepartureTime;
 
-        // --- Departure Time ---
         if (stop.type === "hotel" && stop.morning_depart) {
           stop.departure_time = stop.morning_depart;
         } else {
@@ -105,7 +95,6 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
         }
         currentDepartureTime = stop.departure_time;
 
-        // --- Drive to Next Stop ---
         if (i < newCalculatedStops.length - 1) {
           const nextStop = newCalculatedStops[i + 1];
           
@@ -115,12 +104,10 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
               stop.drive_to_next_miles = leg.miles;
               stop.drive_to_next_minutes = leg.minutes;
               
-              // Add drive time to the running clock for the next stop's arrival!
               currentDepartureTime = addMinutes(currentDepartureTime, leg.minutes);
               validCoordIndex++; 
             }
           } else {
-            // Missing coordinates, can't calculate drive
             stop.drive_to_next_miles = null;
             stop.drive_to_next_minutes = null;
           }
@@ -131,7 +118,6 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
       setIsCalculating(false);
     };
 
-    // 500ms debounce: Wait for the user to stop editing/dragging before firing Mapbox
     const timer = setTimeout(() => {
       runTimeRipple();
     }, 500);
@@ -158,10 +144,8 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
     try {
       const newStopFromDB = await createStopInDB(blankStop);
       setTempSegments((prev) => [...prev, newStopFromDB]);
-      console.log("✅ New stop created.");
     } catch (error) {
       console.error("❌ Failed to add new stop", error);
-      alert("Could not create a new stop. Please try again.");
     }
   };
 
@@ -179,23 +163,17 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
   };
 
   const handleUpdateStopData = async (id: UniqueIdentifier, updates: Partial<Stop>) => {
-    // Optimistic UI update (makes the screen feel fast)
     setTempSegments((prev) => 
       prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
     );
 
-    // THE FIX: Actually save the data to Directus
     try {
       await updateStopInDB(id, updates); 
-      console.log(`✅ Stop ${id} saved successfully.`);
-      
-      // Refresh parent metadata (budget, etc)
       handleAutoSave(); 
     } catch (error) {
       console.error("❌ Failed to save stop:", error);
-      // Optional: Revert local state if save fails
     }
-};
+  };
   // #endregion
 
   // #region --- DRAG & DROP HANDLER ---
@@ -211,16 +189,12 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
         sort: index + 1, 
       }));
 
-      // Optimistic UI update (Instant snapping)
       setTempSegments(reorderedStops);
 
       try {
-        // Send the new sort order to the database behind the scenes
         await updateStopsBatch(reorderedStops);
-        console.log("✅ Sort order saved to database.");
       } catch (error) {
         console.error("Failed to save sort order:", error);
-        // If it fails, revert the optimistic update
         setTempSegments(tempSegments); 
       }
     }
@@ -256,17 +230,13 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
                 onDelete={handleDeleteStop}
               />
 
-              {/* THE IN-BETWEEN ROUTE CONNECTOR UI */}
+              {/* THE CLEAN, STANDALONE TRAVEL SEGMENT COMPONENT */}
               {index < calculatedStops.length - 1 && stop.drive_to_next_miles !== null && stop.drive_to_next_miles !== undefined && (
-                <div className="Route_Connector">
-                  <div className="Route_Line"></div>
-                  <div className="Route_Stats">
-                    <Car size={14} />
-                    <span>{stop.drive_to_next_minutes} min</span>
-                    <span className="Route_Dot">•</span>
-                    <span>{stop.drive_to_next_miles.toFixed(1)} mi</span>
-                  </div>
-                </div>
+                <TravelSegment 
+                  index={index}
+                  miles={stop.drive_to_next_miles}
+                  minutes={stop.drive_to_next_minutes}
+                />
               )}
 
             </React.Fragment>
@@ -281,13 +251,3 @@ export const StopsList: React.FC<StopsListProps> = ({ }) => {
     </div>
   );
 };
-
-/* ==========================================================================
-   FUTURE UPDATES & ROADMAP
-   ========================================================================== */
-// #region --- TODOS ---
-/**
- * TODO: Add a '+' button directly on the Route_Connector to insert a stop exactly between two items.
- * TODO: When Dragging there is a snapback then rearange 
- */
-// #endregion
