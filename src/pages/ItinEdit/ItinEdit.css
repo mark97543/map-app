@@ -51,7 +51,6 @@
 /* ==========================================================================
    3. SHARED SECTION CONTAINERS
    ========================================================================== */
-.TRIPSUMMARY_wrapper,
 .EDITNOTES_wrapper,
 .StopsList_wrapper {
   width: 100%;
@@ -63,7 +62,7 @@
   box-sizing: border-box;
 }
 
-.TRIPSUMMARY_wrapper h2,
+
 .EDITNOTES_wrapper h2,
 .StopsList_wrapper h2 {
   font-size: var(--font-sm);
@@ -74,76 +73,6 @@
   font-weight: 600;
   text-align: left;
 }
-
-/* ==========================================================================
-   4. SUMMARY INTERACTIVES
-   ========================================================================== */
-.TRIPSUMMARY_p {
-  font-size: var(--font-lg);
-  color: var(--text-main);
-  line-height: 1.6;
-  cursor: pointer;
-  text-align: left;
-  padding: var(--space-sm);
-  border-radius: var(--radius-sm);
-  transition: var(--transition-smooth);
-}
-
-.TRIPSUMMARY_p:hover { background-color: rgba(255, 255, 255, 0.05); }
-
-.TRIPSUMMARY_input {
-  font-size: var(--font-lg);
-  font-family: inherit;
-  background-color: var(--bg-dark);
-  border: 1px solid var(--primary-muted);
-  color: var(--text-main);
-  width: 100%;
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  outline: none;
-  resize: vertical;
-  min-height: 150px;
-  box-sizing: border-box;
-}
-
-.TRIPSUMMARY_input:focus { border-color: var(--success-teal); }
-
-/* ==========================================================================
-   5. TRIP NOTES & QUILL OVERRIDES
-   ========================================================================== */
-.EDITNOTES_wrapper { display: flex; flex-direction: column; overflow: hidden; }
-
-.trip-notes-view-container { cursor: pointer; min-height: 120px; width: 100%; }
-
-.trip-notes-display {
-  line-height: 1.6;
-  color: var(--text-main);
-  font-size: var(--font-lg);
-  margin: 0;
-  text-align: left;
-}
-
-.ITIN_EDIT_note_placeholder { color: var(--text-dim); opacity: 0.6; }
-
-.ql-toolbar.ql-snow {
-  background-color: var(--bg-dark) !important;
-  border: none !important;
-  border-top: 1px solid var(--primary-muted) !important;
-  border-bottom: 1px solid var(--primary-muted) !important;
-}
-
-.ql-container.ql-snow {
-  background-color: var(--bg-dark) !important;
-  border: none !important;
-  font-family: inherit;
-}
-
-.ql-editor { min-height: 250px; font-size: var(--font-lg); color: var(--text-main); line-height: 1.6; }
-
-.ql-snow .ql-stroke { stroke: var(--text-dim) !important; }
-.ql-snow .ql-fill { fill: var(--text-dim) !important; }
-.ql-snow .ql-picker { color: var(--text-dim) !important; }
-.ql-snow.ql-toolbar button:hover .ql-stroke { stroke: var(--success-teal) !important; }
 
 /* ==========================================================================
    6. THE STOP ITEM CARD (Modern 4-Column Grid)
@@ -486,80 +415,6 @@
 .ItinSelect_DeleteTripBtn:hover {
   background: rgba(255, 77, 77, 0.1);
   color: #ff4d4d;
-}
-
-/* ==========================================================================
-   11. TRIP STATS DASHBOARD (TripStats.tsx)
-   ========================================================================== */
-.TripStats_wrapper {
-  width: 100%;
-  background-color: var(--bg-surface);
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--primary-muted);
-  box-shadow: var(--shadow-main);
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.TripStat_box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 120px;
-}
-
-.TripStat_label {
-  font-size: var(--font-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--primary-glow);
-  font-weight: 600;
-}
-
-.TripStat_value {
-  font-size: var(--font-xl);
-  font-weight: 800;
-  color: var(--text-main);
-  font-family: 'JetBrains Mono', 'Courier New', monospace; /* Matches your time stack */
-}
-
-/* Make the budget pop with your theme color */
-.TripStat_value.success {
-  color: var(--success-teal);
-}
-
-.TripStat_input {
-  background-color: var(--bg-dark);
-  border: 1px solid var(--primary-muted);
-  color: var(--text-main);
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  font-size: var(--font-md);
-  font-family: inherit;
-  outline: none;
-  transition: all var(--transition-smooth);
-}
-
-.TripStat_input:focus {
-  border-color: var(--success-teal);
-  box-shadow: 0 0 8px rgba(0, 255, 170, 0.15);
-}
-
-/* Fixes the dark mode invisible calendar/clock icons */
-.TripStat_input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.5;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.TripStat_input::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
 }
 
 /* ==========================================================================

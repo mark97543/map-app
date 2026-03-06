@@ -3,12 +3,16 @@
    DESCRIPTION: Top-level dashboard for the Trip Editor showing totals.
 ========================================================================== */
 
-import React from 'react';
-import { useTripEdit } from '../../../context/TripEditContext';
+import { useDashboard } from '../../../../context/DashboardContext';
+import { useMyState } from '../../../../context/StatesContext';
+import { useTripEdit } from '../../../../context/TripEditContext';
+import './TripStats.css'
 
 const TripStats = () => {
   // Use the pre-formatted variables from our Context math
-  const { totalBudget, totalMiles, totalTimeFormatted } = useTripEdit();
+  const {  } = useTripEdit();
+  const {} = useMyState();
+  const {totalBudget, totalMiles, totalTimeFormatted} = useDashboard();
 
   return (
     <div className="TripStats_wrapper">

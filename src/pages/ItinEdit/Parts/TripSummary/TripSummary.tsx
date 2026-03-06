@@ -1,5 +1,7 @@
-import { useTripEdit } from '../../../context/TripEditContext';
-
+import { useDashboard } from '../../../../context/DashboardContext';
+import { useMyState } from '../../../../context/StatesContext';
+import { useTripEdit } from '../../../../context/TripEditContext';
+import './TripSummary.css'
 
 interface SlugTitleProps {
 
@@ -8,13 +10,9 @@ interface SlugTitleProps {
 
 const TripSummary: React.FC<SlugTitleProps> = ({})=>{
 
-  const {
-    handleAutoSave,
-    summaryEdit,
-    setSummaryEdit,
-    tempSummary, 
-    setTempSummary
-  } = useTripEdit();
+  const {handleAutoSave} = useTripEdit();
+  const {summaryEdit, setSummaryEdit, tempSummary, setTempSummary} = useMyState();
+  const {} = useDashboard();
 
   return(
     <div className="TRIPSUMMARY_wrapper">

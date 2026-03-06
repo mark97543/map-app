@@ -1,0 +1,49 @@
+.TRIPSUMMARY_wrapper{
+  width: 100%;
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-muted);
+  box-shadow: var(--shadow-main);
+  box-sizing: border-box;
+}
+
+.TRIPSUMMARY_wrapper h2{
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary-glow);
+  margin-bottom: var(--space-md);
+  font-weight: 600;
+  text-align: left;
+}
+
+.TRIPSUMMARY_p {
+  font-size: var(--font-lg);
+  color: var(--text-main);
+  line-height: 1.6;
+  cursor: pointer;
+  text-align: left;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+.TRIPSUMMARY_p:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.TRIPSUMMARY_input {
+  font-size: var(--font-lg);
+  font-family: inherit;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  width: 100%;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  outline: none;
+  resize: vertical;
+  min-height: 150px;
+  box-sizing: border-box;
+}
+
+.TRIPSUMMARY_input:focus { border-color: var(--success-teal); }

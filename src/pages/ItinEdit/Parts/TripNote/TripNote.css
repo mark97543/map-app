@@ -1,0 +1,33 @@
+.EDITNOTES_wrapper { display: flex; flex-direction: column; overflow: hidden; }
+
+.trip-notes-view-container { cursor: pointer; min-height: 120px; width: 100%; }
+
+.trip-notes-display {
+  line-height: 1.6;
+  color: var(--text-main);
+  font-size: var(--font-lg);
+  margin: 0;
+  text-align: left;
+}
+
+.ITIN_EDIT_note_placeholder { color: var(--text-dim); opacity: 0.6; }
+
+.ql-toolbar.ql-snow {
+  background-color: var(--bg-dark) !important;
+  border: none !important;
+  border-top: 1px solid var(--primary-muted) !important;
+  border-bottom: 1px solid var(--primary-muted) !important;
+}
+
+.ql-container.ql-snow {
+  background-color: var(--bg-dark) !important;
+  border: none !important;
+  font-family: inherit;
+}
+
+.ql-editor { min-height: 250px; font-size: var(--font-lg); color: var(--text-main); line-height: 1.6; }
+
+.ql-snow .ql-stroke { stroke: var(--text-dim) !important; }
+.ql-snow .ql-fill { fill: var(--text-dim) !important; }
+.ql-snow .ql-picker { color: var(--text-dim) !important; }
+.ql-snow.ql-toolbar button:hover .ql-stroke { stroke: var(--success-teal) !important; }

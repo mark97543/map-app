@@ -8,24 +8,23 @@ import type React from "react";
 import ReactQuill from 'react-quill-new';
 import { useRef, useEffect } from 'react';
 import 'react-quill-new/dist/quill.snow.css'; 
-import { useTripEdit } from "../../../context/TripEditContext";
+import { useTripEdit } from "../../../../context/TripEditContext";
+import './TripNote.css'
+import { useDashboard } from "../../../../context/DashboardContext";
+import { useMyState } from "../../../../context/StatesContext";
 
 interface NoteProps {
 
 }
 
 const TripNote: React.FC<NoteProps> = ({}) => {
-  const {
-    handleAutoSave,
-    noteEdit,
-    setNoteEdit,
-    tempNote,
-    setTempNote,
-  } = useTripEdit();
+  const {handleAutoSave} = useTripEdit();
+  const {} =useDashboard();
+  const {noteEdit, setNoteEdit, tempNote, setTempNote} = useMyState();
 
   const quillRef = useRef<ReactQuill>(null);
 
-  // #region --- FOCUS MANAGEMENT ---
+
   useEffect(() => {
     if (noteEdit && quillRef.current) {
       // Small timeout ensures the DOM has rendered the editor before focusing
@@ -35,9 +34,7 @@ const TripNote: React.FC<NoteProps> = ({}) => {
       return () => clearTimeout(timer);
     }
   }, [noteEdit]);
-  // #endregion
 
-  // #region --- HANDLERS ---
   const handleBlur = () => {
     /**
      * Quill logic: We wait 150ms to see if the user clicked the toolbar.
@@ -51,7 +48,7 @@ const TripNote: React.FC<NoteProps> = ({}) => {
       }
     }, 150);
   };
-  // #endregion
+
 
   return (
     <div className="EDITNOTES_wrapper">
@@ -96,13 +93,3 @@ const TripNote: React.FC<NoteProps> = ({}) => {
 
 export default TripNote;
 
-/* ==========================================================================
-   FUTURE UPDATES & ROADMAP
-   ========================================================================== */
-// #region --- TODOS ---
-/**
- * TODO: Add 'Modules' config to ReactQuill to limit/expand toolbar options.
- * TODO: Implement a "Discard Changes" button for the Rich Text area.
- * TODO: Add image upload handling for Directus storage within the editor.
- */
-// #endregion
