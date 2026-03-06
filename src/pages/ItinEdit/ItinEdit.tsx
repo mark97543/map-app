@@ -12,7 +12,7 @@ import SlugTitle from './Parts/1_TitleBlock'
 import TripSummary from './Parts/TripSummary/TripSummary'
 import TripNote from './Parts/TripNote/TripNote'
 import TripStats from './Parts/TripStats/TripStats' // <-- IMPORT THE NEW ROW
-import { StopsList } from './Parts/StopsList'
+import { StopsList } from './Parts/StopsList/StopsList'
 import KickAssLoader from '../KickAssLoader';
 import { useMyState } from '../../context/StatesContext';
 

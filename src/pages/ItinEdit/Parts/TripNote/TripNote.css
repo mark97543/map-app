@@ -31,3 +31,24 @@
 .ql-snow .ql-fill { fill: var(--text-dim) !important; }
 .ql-snow .ql-picker { color: var(--text-dim) !important; }
 .ql-snow.ql-toolbar button:hover .ql-stroke { stroke: var(--success-teal) !important; }
+
+.EDITNOTES_wrapper {
+  width: 100%;
+  background-color: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-muted);
+  box-shadow: var(--shadow-main);
+  box-sizing: border-box;
+}
+
+
+.EDITNOTES_wrapper h2{
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary-glow);
+  margin-bottom: var(--space-md);
+  font-weight: 600;
+  text-align: left;
+}

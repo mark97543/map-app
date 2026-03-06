@@ -1,6 +1,8 @@
 import React from 'react';
-import { useTripEdit } from '../../../context/TripEditContext';
+import { useTripEdit } from '../../../../../context/TripEditContext';
 import { Car } from 'lucide-react';
+import './TravelSegment.css'
+import { useDashboard } from '../../../../../context/DashboardContext';
 
 interface TravelSegmentProps {
   index: number;
@@ -9,7 +11,8 @@ interface TravelSegmentProps {
 }
 
 const TravelSegment: React.FC<TravelSegmentProps> = ({ index, miles, minutes }) => {
-  const { addWaypoint } = useTripEdit();
+  const {  } = useTripEdit();
+  const {addWaypoint} = useDashboard();
 
   // Format the time nicely
   const hrs = minutes ? Math.floor(minutes / 60) : 0;

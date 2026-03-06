@@ -1,0 +1,74 @@
+.TravelSegment_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px 0;
+  margin: 8px 0;
+  z-index: 1;
+}
+
+/* The thin horizontal dividers (left and right of the pill) */
+.TravelSegment_wrapper::before,
+.TravelSegment_wrapper::after {
+  content: "";
+  flex-grow: 1;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle gray line */
+}
+
+/* The Inset Pill */
+.TravelSegment_pill {
+  background-color: rgba(0, 0, 0, 0.4); /* Deep dark inset */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 1rem; /* Larger, readable text */
+  padding: 12px 24px;
+  border-radius: 8px; /* Slightly squared pill */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); /* Creates the "pressed in" look */
+  transition: all 0.2s ease;
+}
+
+.TravelSegment_pill:hover {
+  border-color: var(--primary-muted);
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.pill_dot {
+  color: var(--text-dim);
+  margin: 0 8px;
+}
+
+/* The Add Waypoint Button - Now floats on the right edge */
+.TravelSegment_addBtn {
+  position: absolute;
+  right: 20px; 
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--bg-dark);
+  border: 1px dashed var(--primary-muted);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0; 
+}
+
+.TravelSegment_wrapper:hover .TravelSegment_addBtn {
+  opacity: 1;
+  border-color: var(--success-teal);
+  color: var(--success-teal);
+  background-color: rgba(0, 255, 170, 0.1);
+  box-shadow: 0 0 12px rgba(0, 255, 170, 0.2);
+}
