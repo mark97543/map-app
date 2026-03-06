@@ -21,7 +21,7 @@ const TravelSegment: React.FC<TravelSegmentProps> = ({ index, miles, minutes }) 
       
       {/* The wide, inset pill matching the professional design */}
       <div className="TravelSegment_pill">
-        <Car size={18} color="#9ca3af" style={{ marginRight: '4px' }} />
+        <Car size={18} color="#9ca3af" style={{ marginRight: '8px' }} />
         <span>Car Travel Time: {timeString}</span>
         <span className="pill_dot">•</span>
         <span>Car Travel Distance: {miles?.toFixed(1) || 0} mi</span>

@@ -24,7 +24,7 @@ import {
 } from "@dnd-kit/sortable";
 
 import { StopItem } from "./StopItem";
-import TravelSegment from "./TravelSegment"; // NEW: Import the standalone component
+import TravelSegment from "./TravelSegment"; 
 import { type Stop } from "../../../context/TripEditContext";
 import { createStopInDB, deleteStopFromDB, updateStopsBatch, updateStopInDB } from '../../../services/api'; 
 import { fetchBatchDriveData, addMinutes } from "./Resources/RouteEngine";

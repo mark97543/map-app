@@ -127,13 +127,55 @@
   text-align: left;
 }
 
-.complete_pill {
-  background: rgba(194, 158, 93, 0.2);
-  color: var(--warning-gold);
-  border: 1px solid var(--warning-gold);
-  padding: 4px 12px;
-  border-radius: 20px;
-  display: inline-block;
+/* ==========================================================================
+   4. STATUS PILLS
+   ========================================================================== */
+
+/* Base Pill Styling for common properties */
+.draft_pill, 
+.planned_pill, 
+.complete_pill, 
+.archived_pill {
+  padding: 4px 14px;
+  border-radius: 50px; /* Fully rounded 'pill' shape */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+
+/* Draft: Neutral/Secondary vibe */
+.draft_pill {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+  border-color: rgba(156, 163, 175, 0.3);
+}
+
+/* Planned: Blue/Action vibe */
+.planned_pill {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Completed: Gold/Star vibe (Updated from your partial) */
+.complete_pill {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning-gold, #fbbf24);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  /* This handles the star rating text nicely */
+  letter-spacing: 2px; 
+}
+
+/* Archived: Muted/Danger vibe */
+.archived_pill {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+  font-style: italic;
 }

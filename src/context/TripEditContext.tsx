@@ -1,13 +1,16 @@
 /* ==========================================================================
   CONTEXT: TripEditContext
-  DESCRIPTION: The "Brain" for the Itinerary Editor. 
-                Handles Fetching, Global State, Math, and Directus Sync.
+  DESCRIPTION: API Calls Only
+                
 ========================================================================== */
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { getAllTrips } from '../services/api';
+
 import { type UniqueIdentifier } from '@dnd-kit/core';
 import { updateTrip, getTripById, createStopInDB, updateStopsBatch } from '../services/api';
 import { useDashboard } from './DashboardContext';
+import { useMyState } from './StatesContext';
 
 // #region ----- Interfaces -----
 export interface Stop {
@@ -36,8 +39,8 @@ export interface Trip {
   trip_summary: string;
   trip_notes: string;
   total_budget?: number;
-  total_miles?: number; // NEW: Added to DB Interface
-  total_time?: string;  // NEW: Added to DB Interface
+  total_distance?: number; 
+  total_time?: number;     // OPTION 1: Stored as Float (decimal hours)
   stops?: Stop[];
 }
 
@@ -71,17 +74,22 @@ interface TripEdit {
   // Stats & Actions
   totalBudget: number;
   totalMiles: number;
-  totalTimeFormatted: string;
+  totalTimeFormatted: string; // String for the UI ("4h 30m")
+  totalTimeDecimal: number;   // Float for the DB (4.5)
   addWaypoint: (insertIndex: number) => Promise<void>;
+
+  //New Items
+  fetchInitialData: () => Promise<void>;
 }
 // #endregion
 
 const TripEditContext = createContext<TripEdit | undefined>(undefined);
 
 export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { triggerRefresh } = useDashboard();
 
-  const [loading, setLoading] = useState(false);
+  const {loading, setLoading, setAllTrips} = useMyState();
+
+
   const [tripDetails, setTripDetails] = useState<Trip | null>(null);
   const [titleEdit, setTitleEdit] = useState(false);
   const [summaryEdit, setSummaryEdit] = useState(false);
@@ -116,7 +124,6 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTitleEdit(false);
     setSummaryEdit(false);
     setNoteEdit(false);
-
     if (!tripDetails?.id) return;
 
     const hasChanges = 
@@ -131,21 +138,14 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           trip_id: tempId, 
           title: tempTitle,
           trip_summary: tempSummary,
-          trip_notes: tempNote
+          trip_notes: tempNote,
+          total_time:totalTimeDecimal
         };
-
         const updated = await updateTrip(tripDetails.id, payload);
-
         if (updated) {
           setTripDetails(updated); 
-          triggerRefresh();
-          console.log("✅ Trip metadata synced with server.");
         }
       } catch (err) {
-        setTempId(tripDetails.trip_id);
-        setTempTitle(tripDetails.title);
-        setTempSummary(tripDetails.trip_summary);
-        setTempNote(tripDetails.trip_notes);
         console.error("Save failed:", err);
       }
     }
@@ -155,8 +155,7 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   const totalBudget = useMemo(() => {
     return (tempSegments ?? []).reduce((runningTotal: number, currentStop: any) => {
-      const stopBudget = Number(currentStop.budget) || 0;
-      return runningTotal + stopBudget;
+      return runningTotal + (Number(currentStop.budget) || 0);
     }, 0);
   }, [tempSegments]);
 
@@ -164,25 +163,32 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return (tempSegments ?? []).reduce((sum, stop) => sum + (Number(stop.drive_to_next_miles) || 0), 0);
   }, [tempSegments]);
 
-  const totalTimeFormatted = useMemo(() => {
-    const totalMinutes = (tempSegments ?? []).reduce((sum, stop) => {
+  // Intermediate Calculation: Total Minutes
+  const totalMinutes = useMemo(() => {
+    return (tempSegments ?? []).reduce((sum, stop) => {
       const stay = Number(stop.stay_time) || 0;
       const drive = Number(stop.drive_to_next_minutes) || 0;
       return sum + stay + drive;
     }, 0);
+  }, [tempSegments]);
 
+  // STAT 1: For the UI Dashboard (String)
+  const totalTimeFormatted = useMemo(() => {
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
     return `${hours}h ${mins}m`;
-  }, [tempSegments]);
+  }, [totalMinutes]);
+
+  // STAT 2: For the Database (Float)
+  const totalTimeDecimal = useMemo(() => {
+    return Number((totalMinutes / 60).toFixed(2));
+  }, [totalMinutes]);
 
   const addWaypoint = async (insertIndex: number) => {
     if (!tripDetails?.id) return;
-    
-    // 1. Build the blank stop data
     const blankStop = {
       trip_id: tripDetails.id,
-      sort: insertIndex + 2, // Will be normalized below
+      sort: insertIndex + 2,
       name: 'New Waypoint',
       lat: null, lng: null,
       stay_time: 0, 
@@ -191,62 +197,44 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     try {
-      // 2. Create the real stop in Directus FIRST to get a valid DB ID
       const newStopFromDB = await createStopInDB(blankStop);
-
-      // 3. Insert the real stop into our local array at the exact right spot
       const updatedSegments = [...tempSegments];
       updatedSegments.splice(insertIndex + 1, 0, newStopFromDB);
-
-      // 4. Re-normalize the sort orders so DND-kit and Directus are perfectly synced
       const reSortedSegments = updatedSegments.map((stop, i) => ({ ...stop, sort: i + 1 }));
-      
-      // 5. Update the UI instantly
       setTempSegments(reSortedSegments);
-
-      // 6. Quietly update the sort order in the database for all the stops that shifted down
       await updateStopsBatch(reSortedSegments);
-      
-      console.log("📍 Waypoint inserted with real DB ID!");
-      
     } catch (error) {
-      console.error("❌ Failed to create waypoint in DB:", error);
-      alert("Could not insert waypoint. Check your connection.");
+      console.error("❌ Failed to create waypoint:", error);
     }
   };
-
   // #endregion
 
   // #region --- MASTER STATS WATCHER ---
   useEffect(() => {
     if (!tripDetails?.id) return;
 
-    // Grab the current values from the database
     const dbBudget = Number(tripDetails.total_budget) || 0;
-    const dbMiles = Number(tripDetails.total_miles) || 0;
-    const dbTime = tripDetails.total_time || "";
+    const dbDistance = Number(tripDetails.total_distance) || 0; 
+    const dbTime = Number(tripDetails.total_time) || 0; // Float from DB
 
-    // Check if ANY of our local calculations differ from the database
     const statsChanged = 
       totalBudget !== dbBudget || 
-      totalMiles !== dbMiles || 
-      totalTimeFormatted !== dbTime;
+      totalMiles !== dbDistance || 
+      totalTimeDecimal !== dbTime;
 
     if (statsChanged) {
-      // Debounce the save so it doesn't spam the database while typing or calculating
       const syncTimer = setTimeout(async () => {
         try {
           const payload = { 
             total_budget: totalBudget,
-            total_miles: totalMiles,
-            total_time: totalTimeFormatted
+            total_distance: totalMiles, 
+            total_time: totalTimeDecimal // Sending the Float!
           };
 
           const updated = await updateTrip(tripDetails.id, payload);
           if (updated) {
             setTripDetails(updated); 
-            triggerRefresh(); 
-            console.log(`📊 Stats auto-synced! Budget: $${totalBudget} | Miles: ${totalMiles} | Time: ${totalTimeFormatted}`);
+            console.log(`📊 Stats Synced: $${totalBudget} | ${totalMiles}mi | ${totalTimeDecimal}hrs`);
           }
         } catch (error) {
           console.error("Failed to auto-sync trip stats:", error);
@@ -255,8 +243,27 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       return () => clearTimeout(syncTimer); 
     }
-  }, [totalBudget, totalMiles, totalTimeFormatted, tripDetails, triggerRefresh]);
+  }, [totalBudget, totalMiles, totalTimeDecimal, tripDetails]);
   // #endregion
+
+
+  //================================Stuff To Keep 
+
+    const fetchInitialData = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllTrips();
+        //console.log("Fetched All Trips:", data);
+        setAllTrips(data);
+      } catch (error) {
+        console.error("Error loading gallery:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
+
 
   return (
     <TripEditContext.Provider value={{ 
@@ -275,7 +282,9 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       totalBudget,
       totalMiles,
       totalTimeFormatted,
-      addWaypoint 
+      totalTimeDecimal,
+      addWaypoint,
+      fetchInitialData
     }}>
       {children}
     </TripEditContext.Provider>
