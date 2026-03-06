@@ -1,0 +1,271 @@
+.StopItem_input {
+  flex: 1;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  outline: none;
+  width: 100%;
+}
+
+.StopItem_noteInput {
+  width: 100%;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.StopItem_input:focus, .StopItem_noteInput:focus { border-color: var(--success-teal); }
+.StopItem_EditLocation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+.StopItem_TypeSelect {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  border: 1px solid var(--primary-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  outline: none;
+  text-align: center;
+  width: 100%;
+  max-width: 85px; /* Safely fits in 100px column */
+}
+
+/* Coordinates Pill (View Mode) */
+.StopItem_Coords {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  color: var(--text-dim);
+  transition: all 0.2s;
+  margin-top: 0 !important;
+}
+.StopItem_Coords:hover { background: var(--success-teal); color: var(--bg-dark); }
+
+/* Coordinates Inputs (Edit Mode) */
+.StopItem_CoordInputs_Inline { display: flex; align-items: center; gap: 4px; }
+.StopItem_CoordInputs_Inline input {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--primary-muted);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: var(--font-md); 
+  padding: 4px 6px;
+  text-align: center;
+  border-radius: var(--radius-md);
+  outline: none;
+  width: 180px;
+  transition: border-color 0.2s;
+}
+.StopItem_CoordInputs_Inline input:focus { border-color: var(--success-teal); }
+.StopItem_DeleteBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: auto; /* Pushes Save/Cancel to the right */
+}
+
+.StopItem_DeleteBtn:hover {
+  background: rgba(255, 77, 77, 0.1); /* Subtle red background */
+  color: #ff4d4d; /* Danger red */
+  border-color: rgba(255, 77, 77, 0.3);
+}
+
+.StopItem_CostText {
+  font-size: 1.2rem;
+  color: var(--success-teal);
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.StopItem_Coords_Pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px; /* Fully rounded pill */
+  color: var(--text-dim);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.StopItem_Coords_Pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-color: var(--primary-muted);
+}
+
+.StopItem_TimeStack {
+  grid-area: times;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; 
+  justify-content: flex-start;
+  padding: 16px 16px 16px 0;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--primary-glow);
+  gap: 6px;
+  white-space: nowrap; /* CRITICAL: Forces text onto single line */
+}
+
+.StopItems_wrapper {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  /* 4 Columns: Grabber | Sleek Icon | Main Content | Times (Right Aligned) */
+  grid-template-columns: 32px 100px 1fr 110px; 
+  grid-template-areas: 
+    "grab header header header"
+    "grab icon meta times"
+    "grab icon note times";
+  
+  margin: var(--space-sm) 0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--primary-muted);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.StopItems_wrapper:hover {
+  border-color: var(--primary-main);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.StopItems_dragging {
+  opacity: 0.7;
+  transform: scale(1.01);
+  border-color: var(--success-teal);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  z-index: 999;
+}
+
+/* Area: Grabber */
+.StopItem_grabber_div {
+  grid-area: grab;
+  background-color: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  cursor: grab;
+  border-right: 1px solid var(--primary-muted);
+}
+.StopItem_grabber_div:active { cursor: grabbing; }
+
+/* Area: Header */
+.StopItem_titleRow {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--primary-muted);
+  gap: 16px;
+}
+
+.StopItem_LabelText {
+  font-size: var(--font-xl);
+  font-weight: 800;
+  color: var(--text-main);
+  flex: 1; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.StopItem_ActionButtons { display: flex; gap: 8px; }
+
+/* Area: Sleek Icon Sidebar */
+.StopItem_Icon {
+  grid-area: icon;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 16px 10px;
+  border-right: 1px solid var(--primary-muted);
+  gap: 6px;
+}
+
+.StopItem_Icon > svg {
+  background-color: var(--primary-muted);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 50%;
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box;
+}
+
+.StopItem_Icon p {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin: 0;
+  text-align: center;
+}
+
+/* Area: Meta (Strict Columns for Stay, Budget, Coords) */
+.StopItem_StayBudget {
+  grid-area: meta;
+  display: grid; 
+  grid-template-columns: 140px 120px auto; /* Locks columns in vertically */
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px 8px;
+}
+
+.StayBudget_Group { display: flex; align-items: center; gap: 8px; }
+.StayBudget_Group span { font-size: var(--font-lg); color: var(--text-main); }
+.StayBudget_Group:nth-child(2) span { color: #00ffaa; font-weight: 700; } /* Budget Green */
+
+/* Area: Note */
+.StopItem_note {
+  grid-area: note;
+  padding: 4px 24px 16px;
+  font-size: var(--font-md);
+  color: var(--text-dim);
+}
+.StopItem_note p { margin: 0; line-height: 1.5; }
+
+/* Area: Times (Right-Aligned Column with NO-WRAP) */
+
+.TimeStack_Arr { color: var(--text-dim); }
+.TimeStack_Dep { color: var(--success-teal); font-weight: 800; font-size: 1.05rem; }

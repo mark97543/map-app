@@ -2,7 +2,7 @@ import React from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
-import { StopItem } from "../StopItem";
+import { StopItem } from "../StopItem/StopItem";
 import TravelSegment from "./TravelSegment/TravelSegment"; 
 import { useStopsListLogic } from "./StopsList.hook";
 import './StopsList.css';
