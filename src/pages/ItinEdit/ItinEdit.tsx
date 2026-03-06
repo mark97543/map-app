@@ -13,9 +13,12 @@ import TripSummary from './Parts/TripSummary'
 import TripNote from './Parts/TripNote'
 import TripStats from './Parts/TripStats' // <-- IMPORT THE NEW ROW
 import { StopsList } from './Parts/StopsList'
+import KickAssLoader from '../KickAssLoader';
+import { useMyState } from '../../context/StatesContext';
 
 const ItinEdit = () => {
-  const { loading, tripDetails, loadTrip } = useTripEdit();
+  const {loading, tripDetails} = useMyState();
+  const { loadTrip } = useTripEdit();
   const { slug } = useParams<{ slug: string }>();
 
   useEffect(() => {
@@ -24,7 +27,7 @@ const ItinEdit = () => {
     }
   }, [slug, loadTrip]);
 
-  if (loading) return <div className="loading-screen">Loading Trip Details...</div>;
+  if (loading) return <div className="loading-screen"><KickAssLoader/></div>;
   if (!tripDetails) return <div className="error-screen">Trip not found.</div>;
 
   return (
