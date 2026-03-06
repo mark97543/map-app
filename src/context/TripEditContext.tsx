@@ -4,11 +4,11 @@
                 
 ========================================================================== */
 
-import React, { createContext, useContext, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useCallback } from 'react';
 import { getAllTrips } from '../services/api';
 
 
-import { updateTrip, getTripById, createStopInDB, updateStopsBatch } from '../services/api';
+import { updateTrip, getTripById } from '../services/api';
 import { useDashboard } from './DashboardContext';
 import { useMyState } from './StatesContext';
 
@@ -19,7 +19,6 @@ interface TripEdit {
  
   fetchInitialData: () => Promise<void>;
 }
-// #endregion
 
 const TripEditContext = createContext<TripEdit | undefined>(undefined);
 
@@ -28,46 +27,16 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const {setLoading, setAllTrips, tripDetails, setTripDetails,
     setTitleEdit, setSummaryEdit, setNoteEdit, tempId, tempTitle,
     tempSummary, tempNote, setTempSegments, setTempId,
-    setTempTitle, setTempSummary, setTempNote
+    setTempTitle, setTempSummary, setTempNote, tempStartDate, tempStartTime, tempStatus, tempRating,
+    setTempStartDate, setTempStartTime, setTempStatus, setTempRating
   } = useMyState();
 
-  const {totalBudget, totalMiles, totalTimeDecimal} = useDashboard();
+  const {} = useDashboard();
 
   //MASTER STATS WATCHER ---
   useEffect(() => {
-    if (!tripDetails?.id) return;
 
-    const dbBudget = Number(tripDetails.total_budget) || 0;
-    const dbDistance = Number(tripDetails.total_distance) || 0; 
-    const dbTime = Number(tripDetails.total_time) || 0; // Float from DB
-
-    const statsChanged = 
-      totalBudget !== dbBudget || 
-      totalMiles !== dbDistance || 
-      totalTimeDecimal !== dbTime;
-
-    if (statsChanged) {
-      const syncTimer = setTimeout(async () => {
-        try {
-          const payload = { 
-            total_budget: totalBudget,
-            total_distance: totalMiles, 
-            total_time: totalTimeDecimal // Sending the Float!
-          };
-
-          const updated = await updateTrip(tripDetails.id, payload);
-          if (updated) {
-            setTripDetails(updated); 
-            console.log(`📊 Stats Synced: $${totalBudget} | ${totalMiles}mi | ${totalTimeDecimal}hrs`);
-          }
-        } catch (error) {
-          console.error("Failed to auto-sync trip stats:", error);
-        }
-      }, 1000); 
-
-      return () => clearTimeout(syncTimer); 
-    }
-  }, [totalBudget, totalMiles, totalTimeDecimal, tripDetails]);
+  }, []);
 
     const fetchInitialData = async () => {
       setLoading(true);
@@ -94,6 +63,11 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setTempSummary(data.trip_summary || '');
         setTempNote(data.trip_notes || '');
         setTempSegments(data.stops || []);
+        setTempStartDate(data.start_date || '');
+        setTempStartTime(data.start_time || '');
+        setTempStatus(data.status || 'draft')
+        setTempRating(data.trip_rating || 0);
+
       }
     } catch (err) {
       console.error("Failed to load trip:", err);
@@ -112,7 +86,12 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tempId !== tripDetails.trip_id || 
       tempTitle !== tripDetails.title || 
       tempSummary !== tripDetails.trip_summary || 
-      tempNote !== tripDetails.trip_notes;
+      tempNote !== tripDetails.trip_notes ||
+      tempStartDate !== tripDetails.start_date ||
+      tempStartTime !== tripDetails.start_time || 
+      tempStatus !== tripDetails.status ||
+      tempRating !== tripDetails.trip_rating;
+
 
     if (hasChanges) {
       try {
@@ -121,6 +100,10 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           title: tempTitle,
           trip_summary: tempSummary,
           trip_notes: tempNote,
+          start_date:tempStartDate,
+          start_time:tempStartTime,
+          status:tempStatus,
+          trip_rating:tempRating
         };
         const updated = await updateTrip(tripDetails.id, payload);
         if (updated) {

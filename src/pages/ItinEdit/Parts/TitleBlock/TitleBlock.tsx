@@ -1,4 +1,5 @@
-import { useTripEdit } from "../../../context/TripEditContext";
+import { useMyState } from "../../../../context/StatesContext";
+import { useTripEdit } from "../../../../context/TripEditContext";
 
 interface SlugTitleProps {
 
@@ -6,15 +7,16 @@ interface SlugTitleProps {
 
 const SlugTitle: React.FC<SlugTitleProps> = ({}) => {
   const {
+    handleAutoSave
+  } =useTripEdit();
+  const {   
     tripDetails,
     titleEdit,
     setTitleEdit,
     setTempId,
     tempId,
     setTempTitle,
-    tempTitle,
-    handleAutoSave
-  } =useTripEdit();
+    tempTitle,} = useMyState();
 
   if (!tripDetails) return <div className="loading-placeholder">Loading Title...</div>;
 

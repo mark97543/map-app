@@ -8,7 +8,7 @@ import './ItinEdit.css'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import { useTripEdit } from '../../context/TripEditContext'
-import SlugTitle from './Parts/1_TitleBlock'
+import SlugTitle from './Parts/TitleBlock/TitleBlock'
 import TripSummary from './Parts/TripSummary/TripSummary'
 import TripNote from './Parts/TripNote/TripNote'
 import TripStats from './Parts/TripStats/TripStats' // <-- IMPORT THE NEW ROW

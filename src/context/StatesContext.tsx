@@ -12,12 +12,14 @@ interface StateInterface {
   setAllTrips: React.Dispatch<React.SetStateAction<any[] | null>>;
   tripDetails: Trip | null; 
   setTripDetails: React.Dispatch<React.SetStateAction<Trip | null>>;
+  
   titleEdit: boolean;
   setTitleEdit: (edit: boolean) => void;
   summaryEdit: boolean;
   setSummaryEdit: (val: boolean) => void;
   noteEdit: boolean;
   setNoteEdit: (val: boolean) => void;
+  
   tempId: string;
   setTempId: (val: string) => void;
   tempTitle: string;
@@ -26,8 +28,23 @@ interface StateInterface {
   setTempSummary: (val: string) => void;
   tempNote: string;
   setTempNote: (val: string) => void;
+  
+  // ✅ ADDED: Date, Time, and Status States
+  tempStartDate: string;
+  setTempStartDate: (val: string) => void;
+  tempStartTime: string;
+  setTempStartTime: (val: string) => void;
+  tempStatus: string;
+  setTempStatus: (val: string) => void;
+
   tempSegments: Stop[];
   setTempSegments: React.Dispatch<React.SetStateAction<Stop[]>>;
+
+  calculatedStops: any[];
+  setCalculatedStops: React.Dispatch<React.SetStateAction<any[]>>;
+
+  tempRating: number;
+  setTempRating: (val: number) => void;
 }
 
 export interface Trip {
@@ -36,10 +53,15 @@ export interface Trip {
   trip_id: string;
   trip_summary: string;
   trip_notes: string;
+  // ✅ ADDED: Database columns for Date, Time, and Status
+  start_date?: string | null;
+  start_time?: string | null;
+  status?: string;
   total_budget?: number;
   total_distance?: number; 
-  total_time?: number;     // OPTION 1: Stored as Float (decimal hours)
+  total_time?: number;    
   stops?: Stop[];
+  trip_rating?:number;
 }
 
 export interface Stop {
@@ -66,18 +88,27 @@ const MyStateContext = createContext<StateInterface | undefined>(undefined);
 
 // 3. The Provider Component
 export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [loading, setLoading] = useState(false); ///Setting the Loading State for Each Page 
+  const [loading, setLoading] = useState(false); 
   const [allTrips, setAllTrips] = useState<any[] | null>(null);
   const [tripDetails, setTripDetails] = useState<Trip | null>(null);
   const [titleEdit, setTitleEdit] = useState(false);
   const [summaryEdit, setSummaryEdit] = useState(false);
   const [noteEdit, setNoteEdit] = useState(false);
+  
   const [tempId, setTempId] = useState('');
   const [tempTitle, setTempTitle] = useState('');
   const [tempSummary, setTempSummary] = useState('');
   const [tempNote, setTempNote] = useState<string>('');
-  const [tempSegments, setTempSegments] = useState<Stop[]>([]);
+  
+  // ✅ ADDED: Initialize the missing state variables
+  const [tempStartDate, setTempStartDate] = useState('');
+  const [tempStartTime, setTempStartTime] = useState('');
+  const [tempStatus, setTempStatus] = useState('draft');
 
+  const [tempSegments, setTempSegments] = useState<Stop[]>([]);
+  const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
+
+  const [tempRating, setTempRating] = useState<number>(0);
 
   const value = {
     loading, setLoading,
@@ -90,7 +121,16 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
     tempTitle, setTempTitle,
     tempSummary, setTempSummary,
     tempNote, setTempNote,
-    tempSegments, setTempSegments
+    
+    // ✅ ADDED: Export them so your components can use them
+    tempStartDate, setTempStartDate,
+    tempStartTime, setTempStartTime,
+    tempStatus, setTempStatus,
+
+    tempSegments, setTempSegments,
+    calculatedStops, setCalculatedStops,
+
+    tempRating, setTempRating
   };
 
   return (
@@ -100,7 +140,7 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
   );
 };
 
-// 4. The Custom Hook (This makes use in components clean)
+// 4. The Custom Hook
 export const useMyState = () => {
   const context = useContext(MyStateContext);
   if (context === undefined) {
