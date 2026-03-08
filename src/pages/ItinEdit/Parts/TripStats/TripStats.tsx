@@ -9,6 +9,7 @@ import { useDashboard } from '../../../../context/DashboardContext';
 import { useMyState } from '../../../../context/StatesContext';
 import { useTripEdit } from '../../../../context/TripEditContext';
 import './TripStats.css';
+import { minToHHMM } from '../Resources/TimeFunc';
 
 const TripStats = () => {
   // Local state to track which field is actively being typed into
@@ -21,7 +22,8 @@ const TripStats = () => {
     tempStartTime, setTempStartTime,
     tempStatus, setTempStatus,
     tempRating, setTempRating,
-    tripDetails
+    tripDetails, totalMiles,
+    totalMinutes
   } = useMyState();
   const { totalBudget } = useDashboard();
 
@@ -155,12 +157,12 @@ const TripStats = () => {
 
       <div className="TripStat_box">
         <label className="TripStat_label">Total Miles</label>
-        <span className="TripStat_value"> mi</span>
+        <span className="TripStat_value">{Number(totalMiles).toFixed(0)} mi</span>
       </div>
 
       <div className="TripStat_box">
         <label className="TripStat_label">Total Time</label>
-        <span className="TripStat_value">xxh xxm</span>
+        <span className="TripStat_value">{minToHHMM(totalMinutes)}</span>
       </div>
 
     </div>

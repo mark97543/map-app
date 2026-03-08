@@ -5,42 +5,44 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 /**
  * Fetches driving data for an entire array of coordinates in ONE single API call.
- * Note: Mapbox Directions API accepts up to 25 coordinates per request.
+ * Note: Mapbox Directions API accepts infinate coordinates
  */
 export const fetchBatchDriveData = async (coordinates: {lat: number, lng: number}[]) => {
-  if (!MAPBOX_TOKEN) {
-    console.error("🚨 Mapbox token is missing! Check your .env file.");
-    return [];
-  }
+  if (!MAPBOX_TOKEN || coordinates.length < 2) return [];
 
-  // We need at least 2 points to make a route
-  if (coordinates.length < 2) return [];
+  const MAX_POINTS = 25;
+  let allLegs: any[] = [];
 
-  try {
-    // Mapbox requires the format: lng,lat;lng,lat;lng,lat
-    const coordsString = coordinates
-      .map(c => `${c.lng},${c.lat}`)
-      .join(';');
-
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordsString}?overview=false&access_token=${MAPBOX_TOKEN}`;
+  // We loop through the coordinates in chunks
+  for (let i = 0; i < coordinates.length - 1; i += (MAX_POINTS - 1)) {
     
-    const response = await fetch(url);
-    const data = await response.json();
+    // Grab a slice of up to 25 points
+    const chunk = coordinates.slice(i, i + MAX_POINTS);
+    
+    // If the chunk only has one point (can happen at the very end), skip it
+    if (chunk.length < 2) break;
 
-    if (data.routes && data.routes.length > 0) {
-      // Mapbox returns "legs". Each leg is the journey between two waypoints.
-      return data.routes[0].legs.map((leg: any) => ({
-        miles: leg.distance * 0.000621371, // Convert meters to miles
-        minutes: Math.round(leg.duration / 60) // Convert seconds to minutes
-      }));
+    const coordsString = chunk.map(c => `${c.lng},${c.lat}`).join(';');
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordsString}?overview=false&access_token=${MAPBOX_TOKEN}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.routes && data.routes[0]) {
+        const legs = data.routes[0].legs.map((leg: any) => ({
+          miles: leg.distance * 0.000621371,
+          minutes: Math.round(leg.duration / 60)
+        }));
+        allLegs = [...allLegs, ...legs];
+      }
+    } catch (error) {
+      console.error("Mapbox Chunk Error:", error);
     }
-    return [];
-  } catch (error) {
-    console.error("Mapbox API Error:", error);
-    return [];
   }
-};
 
+  return allLegs;
+};
 /**
  * Adds a specific number of minutes to an "HH:MM" time string.
  */

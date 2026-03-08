@@ -12,14 +12,12 @@ interface StateInterface {
   setAllTrips: React.Dispatch<React.SetStateAction<any[] | null>>;
   tripDetails: Trip | null; 
   setTripDetails: React.Dispatch<React.SetStateAction<Trip | null>>;
-  
   titleEdit: boolean;
   setTitleEdit: (edit: boolean) => void;
   summaryEdit: boolean;
   setSummaryEdit: (val: boolean) => void;
   noteEdit: boolean;
   setNoteEdit: (val: boolean) => void;
-  
   tempId: string;
   setTempId: (val: string) => void;
   tempTitle: string;
@@ -28,23 +26,22 @@ interface StateInterface {
   setTempSummary: (val: string) => void;
   tempNote: string;
   setTempNote: (val: string) => void;
-  
-  // ✅ ADDED: Date, Time, and Status States
   tempStartDate: string;
   setTempStartDate: (val: string) => void;
   tempStartTime: string;
   setTempStartTime: (val: string) => void;
   tempStatus: string;
   setTempStatus: (val: string) => void;
-
   tempSegments: Stop[];
   setTempSegments: React.Dispatch<React.SetStateAction<Stop[]>>;
-
   calculatedStops: any[];
   setCalculatedStops: React.Dispatch<React.SetStateAction<any[]>>;
-
   tempRating: number;
   setTempRating: (val: number) => void;
+  totalMiles:number;
+  setTotalMiles:(val:number)=>void;
+  totalMinutes:number;
+  setTotalMinutes:(val:number)=>void;
 }
 
 export interface Trip {
@@ -94,21 +91,18 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [titleEdit, setTitleEdit] = useState(false);
   const [summaryEdit, setSummaryEdit] = useState(false);
   const [noteEdit, setNoteEdit] = useState(false);
-  
   const [tempId, setTempId] = useState('');
   const [tempTitle, setTempTitle] = useState('');
   const [tempSummary, setTempSummary] = useState('');
   const [tempNote, setTempNote] = useState<string>('');
-  
-  // ✅ ADDED: Initialize the missing state variables
   const [tempStartDate, setTempStartDate] = useState('');
   const [tempStartTime, setTempStartTime] = useState('');
   const [tempStatus, setTempStatus] = useState('draft');
-
   const [tempSegments, setTempSegments] = useState<Stop[]>([]);
   const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
-
   const [tempRating, setTempRating] = useState<number>(0);
+  const [totalMiles, setTotalMiles]=useState<number>(0);
+  const [totalMinutes, setTotalMinutes]=useState<number>(0);
 
   const value = {
     loading, setLoading,
@@ -121,16 +115,14 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
     tempTitle, setTempTitle,
     tempSummary, setTempSummary,
     tempNote, setTempNote,
-    
-    // ✅ ADDED: Export them so your components can use them
     tempStartDate, setTempStartDate,
     tempStartTime, setTempStartTime,
     tempStatus, setTempStatus,
-
     tempSegments, setTempSegments,
     calculatedStops, setCalculatedStops,
-
-    tempRating, setTempRating
+    tempRating, setTempRating,
+    totalMiles, setTotalMiles,
+    totalMinutes, setTotalMinutes
   };
 
   return (

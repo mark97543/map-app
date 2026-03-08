@@ -8,9 +8,8 @@ import { fetchBatchDriveData, addMinutes } from "../Resources/RouteEngine";
 
 export const useStopsListLogic = () => {
   const { handleAutoSave } = useTripEdit();
-  const { tripDetails, tempSegments, setTempSegments } = useMyState();
+  const { tripDetails, tempSegments, setTempSegments, calculatedStops, setCalculatedStops } = useMyState();
 
-  const [calculatedStops, setCalculatedStops] = useState<any[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
   // --- THE TIME RIPPLE ENGINE ---
