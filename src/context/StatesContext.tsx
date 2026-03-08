@@ -80,6 +80,10 @@ export interface Stop {
   departure_time?: string;
   drive_to_next_minutes?: number | null;
   drive_to_next_miles?: number | null;
+  is_completed?: boolean;
+  actual_arrival?: string | null;
+  actual_departure?: string | null;
+  actual_budget?: number | null;
 }
 
 // 2. Create the Context with an undefined default

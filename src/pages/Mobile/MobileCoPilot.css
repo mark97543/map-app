@@ -1,0 +1,176 @@
+.CoPilot_Container {
+  background-color: #0f172a; /* Deep Slate */
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.CoPilot_Header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.Header_Badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+/* THE HERO CARD */
+.ActiveCard {
+  background: #1e293b;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.ActiveCard_Indicator {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #3b82f6; /* Blue */
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+
+.ActiveCard_Main {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.TypeIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Main_Text h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 800;
+}
+
+.Main_Text p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ActiveCard_Stats {
+  display: flex;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.StatGroup {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.Stat_Label {
+  font-size: 0.6rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.Stat_Value {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.StatDivider {
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+/* BUTTONS */
+.ActiveCard_Actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.Btn_Nav {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.Btn_Check {
+  background: transparent;
+  color: #1dd1a1;
+  border: 2px solid #1dd1a1;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* UPCOMING LIST */
+.Upcoming_Section {
+  margin-top: 40px;
+}
+
+.Upcoming_Section h3 {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.MiniStop {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.Mini_Time {
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: 70px;
+}
+
+.Mini_Dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.Mini_Name {
+  flex-grow: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.Mini_Arrow {
+  color: #334155;
+}

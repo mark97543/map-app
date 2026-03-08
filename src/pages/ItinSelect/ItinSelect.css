@@ -179,3 +179,68 @@
   border-color: rgba(239, 68, 68, 0.3);
   font-style: italic;
 }
+
+/* ==========================================================================
+   5. MOBILE RESPONSIVENESS
+   ========================================================================== */
+
+/* 1. Make the grid base responsive without media queries */
+.ItinSelect_Grid {
+  /* Using min(100%, 350px) prevents the 400px horizontal overflow on phones */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr));
+}
+
+@media (max-width: 768px) {
+  
+  /* 2. Stack the Top Row */
+  .ItinSelect_TopRow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  /* 3. Make Search & Toggle Stack cleanly */
+  .Search_Container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+  }
+
+  /* Make the Search Input take up the whole screen width */
+  .Search_Container .ItinSelect_Search {
+    width: 100%;
+  }
+
+  /* 4. Make the Create Button Finger-Friendly */
+  .ItinSelect_TopRow button {
+    width: 100%;
+    margin-left: 0;
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+
+  /* 5. Adjust Card Header for Mobile */
+  .ItinSelect_CardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ItinSelect_CardHeader h2 {
+    font-size: 1.4rem; /* Slightly smaller on mobile */
+  }
+
+  /* 6. Fix Metrics Box Padding on tiny screens */
+  .ItinSelect_Metrics {
+    padding: 10px 5px;
+  }
+  
+  .ItinSelect_Metrics p {
+    font-size: 1.1rem;
+  }
+}
