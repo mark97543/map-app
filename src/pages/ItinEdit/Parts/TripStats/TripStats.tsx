@@ -23,9 +23,11 @@ const TripStats = () => {
     tempStatus, setTempStatus,
     tempRating, setTempRating,
     tripDetails, totalMiles,
-    totalMinutes
+    totalMinutes, totalBudget,
+    calculatedStops, setTotalBudget,
+    setTotalMiles, setTotalMinutes
   } = useMyState();
-  const { totalBudget } = useDashboard();
+  const {  } = useDashboard();
 
   // The universal save trigger
   const handleBlur = () => {
@@ -43,6 +45,7 @@ const TripStats = () => {
       handleAutoSave();
     }
   }, [tempRating]);
+
 
   return (
     <div className="TripStats_wrapper">
@@ -151,7 +154,7 @@ const TripStats = () => {
       <div className="TripStat_box">
         <label className="TripStat_label">Total Budget</label>
         <span className="TripStat_value success">
-          ${Number(totalBudget).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          ${Number(totalBudget)}
         </span>
       </div>
 

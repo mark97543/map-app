@@ -7,8 +7,12 @@ import { createStopInDB, deleteStopFromDB, updateStopsBatch, updateStopInDB } fr
 import { fetchBatchDriveData, addMinutes } from "../Resources/RouteEngine";
 
 export const useStopsListLogic = () => {
-  const { handleAutoSave } = useTripEdit();
-  const { tripDetails, tempSegments, setTempSegments, calculatedStops, setCalculatedStops } = useMyState();
+  const { handleAutoSave, syncTripStats } = useTripEdit();
+  const { tripDetails, tempSegments, setTempSegments, calculatedStops, setCalculatedStops,
+      setTotalMiles, setTotalBudget, setTotalMinutes
+   } = useMyState();
+
+
 
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -64,8 +68,23 @@ export const useStopsListLogic = () => {
         }
       }
 
+      const totalMiles = newCalculatedStops.reduce((acc: number, stop: any) => 
+        acc + (Number(stop.drive_to_next_miles) || 0), 0);
+      
+      const totalMin = newCalculatedStops.reduce((acc: number, stop: any) => 
+        acc + (Number(stop.drive_to_next_minutes) || 0), 0);
+      
+      const totalBudget = newCalculatedStops.reduce((acc: number, stop: any) => 
+        acc + (Number(stop.budget) || 0), 0);
+
       setCalculatedStops(newCalculatedStops);
+      setTotalMiles(totalMiles);
+      setTotalMinutes(totalMin);
+      setTotalBudget(totalBudget);
+
+      syncTripStats(totalMiles, totalMin, totalBudget);
       setIsCalculating(false);
+
     };
 
     const timer = setTimeout(runTimeRipple, 500);

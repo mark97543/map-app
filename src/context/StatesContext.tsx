@@ -42,6 +42,8 @@ interface StateInterface {
   setTotalMiles:(val:number)=>void;
   totalMinutes:number;
   setTotalMinutes:(val:number)=>void;
+  totalBudget:number;
+  setTotalBudget:(val:number)=>void;
 }
 
 export interface Trip {
@@ -103,6 +105,7 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [tempRating, setTempRating] = useState<number>(0);
   const [totalMiles, setTotalMiles]=useState<number>(0);
   const [totalMinutes, setTotalMinutes]=useState<number>(0);
+  const [totalBudget, setTotalBudget]=useState<number>(0);
 
   const value = {
     loading, setLoading,
@@ -122,7 +125,8 @@ export const MyStateProvider: React.FC<{ children: React.ReactNode }> = ({ child
     calculatedStops, setCalculatedStops,
     tempRating, setTempRating,
     totalMiles, setTotalMiles,
-    totalMinutes, setTotalMinutes
+    totalMinutes, setTotalMinutes,
+    totalBudget, setTotalBudget
   };
 
   return (

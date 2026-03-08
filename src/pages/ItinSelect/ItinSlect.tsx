@@ -16,6 +16,7 @@ import { Trash2 } from 'lucide-react';
 import { useMyState } from '../../context/StatesContext';
 import {handleCreateTrip, handleDeleteTrip, statusPill, timeConverter} from './ItinSelect.hooks'
 import { useTripEdit } from '../../context/TripEditContext';
+import { minToHHMM } from '../ItinEdit/Parts/Resources/TimeFunc';
 
 
 function ItinSelect(){
@@ -81,9 +82,9 @@ function ItinSelect(){
               </div>
               {statusPill(trip.status, trip.trip_rating)}
               <div className='ItinSelect_Metrics'>
-                <p>{trip.total_distance ? Number(trip.total_distance).toFixed(1) : "0"} <b>mi</b></p>
-                <p className='ItinSelect_Met_Divider'>{timeConverter(trip.total_time)}</p>
-                <p><b>$</b> {trip.total_budget ? Number(trip.total_budget).toLocaleString() : "0.00"}</p>
+                <p>{trip.total_distance ? Number(trip.total_distance).toFixed(0) : "0"} <b>mi</b></p>
+                <p className='ItinSelect_Met_Divider'>{minToHHMM(trip.total_time)}</p>
+                <p><b>$</b> {trip.total_budget ? Number(trip.total_budget).toFixed(2) : "0.00"}</p>
               </div>
               <div className='ItinSelect_Start_Date'>
                 {trip.start_date ? <p>Planned Date: {trip.start_date}</p> : <p>No Start Date</p>}
