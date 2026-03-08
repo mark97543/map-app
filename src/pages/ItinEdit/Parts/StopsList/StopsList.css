@@ -39,3 +39,26 @@
   font-weight: 600;
   text-align: left;
 }
+
+.DayDivider {
+  display: flex;
+  align-items: center;
+  margin: 32px 0 16px 0; /* More space above than below creates "Grouping" */
+  opacity: 0.8;
+}
+
+.DayDivider_Text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--text-dim, #888);
+  padding: 0 15px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.DayDivider_Line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+}
