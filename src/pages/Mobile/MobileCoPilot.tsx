@@ -41,18 +41,18 @@ export const MobileCoPilot = () => {
     // 1. The Destination (The "Real" Stop)
     const destination = `${activeStop.lat},${activeStop.lng}`;
     
-    // 2. The Universal Google Maps Directions URL
+    // 2. The TRUE Official Google Maps Directions URL
+    // Notice the exact domain and the ?api=1 parameter!
     let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
     
     // 3. The "Shaping Point" Waypoints Logic
     if (mapWaypoints.length > 0) {
-      // ✅ FIX: Prefix each coordinate with 'via:'
-      // This turns them into shaping points (no stopping required)
+      // Prefix each coordinate with 'via:'
       const waypointsStr = mapWaypoints
         .map(wp => `via:${wp.lat},${wp.lng}`)
         .join('|');
         
-      // We encode the whole string to ensure the 'via:' and ':' don't get lost
+      // Encode the string so the pipes '|' safely transfer to the app
       url += `&waypoints=${encodeURIComponent(waypointsStr)}`;
     }
     
