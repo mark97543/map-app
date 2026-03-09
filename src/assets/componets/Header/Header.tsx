@@ -26,7 +26,7 @@ function Header() {
   }
 
   return (
-    <div className='HEADER_WRAPPER'>
+    <div className='HEADER_WRAPPER no-print'>
       <div className='HEADER_LOGO' >
         <h1 onClick={LinkToDashboard}>Iter Viae</h1>
       </div>

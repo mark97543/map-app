@@ -1,29 +1,29 @@
 /* -------------------------------------------------------------------------- */
-/*                              High Level Items                              */
+/* High Level Items                              */
 /* -------------------------------------------------------------------------- */
 :root {
   /* --- BASE CANVAS: Deep Obsidian & Charcoal --- */
-  --bg-dark: #0A0F0D;      /* Deepest base - provides high contrast for the map. */
-  --bg-surface: #161B19;   /* Subtle depth - used for Sidebar and Cards. */
+  --bg-dark: #0A0F0D;      
+  --bg-surface: #161B19;   
   
   /* --- BRANDING & ACTIONS: Sage & Slate --- */
-  --primary-main: #5C8374; /* Your signature Forest Green - steady and reliable. */
-  --primary-muted: #43534D; /* Desaturated for borders/dividers - stays out of the way. */
-  --primary-glow: #88B1A1; /* "Frosted" Green for hovers - professional, not neon. */
+  --primary-main: #5C8374; 
+  --primary-muted: #43534D; 
+  --primary-glow: #88B1A1; 
 
   /* --- TYPOGRAPHY: Off-White & Steel --- */
-  --text-main: #F4F7F5;    /* Slightly off-white - prevents "vibration" on dark backgrounds. */
-  --text-dim: #7B8C85;     /* Muted sage-grey - perfect for timestamps and miles. */
+  --text-main: #F4F7F5;    
+  --text-dim: #7B8C85;     
 
   /* --- FUNCTIONAL STATES: Muted Alerts --- */
-  --error-red: #D65A5A;    /* Brick Red - visible but fits the dark theme. */
-  --warning-gold: #C29E5D; /* Burnished Gold - high-end warning for fuel gaps. */
-  --success-teal: #70A9A1; /* Calm Teal - for "Saved to Directus" confirmations. */
+  --error-red: #D65A5A;    
+  --warning-gold: #C29E5D; 
+  --success-teal: #70A9A1; 
 
   /* --- Spacing System --- */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
-  --space-md: 1.5rem;    /* Specified Requirement */
+  --space-md: 1.5rem;    
   --space-lg: 2.5rem;
 
   /* --- Typography Hierarchy --- */
@@ -31,21 +31,15 @@
   --font-md: 1rem;
   --font-lg: 1.25rem;
   --font-xl: 1.5rem;
-  --font-xxl:1.75rem;
-  --font-xxxl:2rem;
+  --font-xxl: 1.75rem;
+  --font-xxxl: 2rem;
 
   /* --- Layout Tokens --- */
-  --radius-sm:4px;
-  --radius-md:8px;
-  --radius-lg: 12px;     /* Specified Requirement */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;     
   --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body{
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    min-height: 100vh;
 }
 
 /* Apply to everything to prevent sizing issues */
@@ -55,3 +49,131 @@ body{
   box-sizing: border-box;
 }
 
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* 💻 Hide the print layout on the computer screen */
+@media screen {
+  .FieldNotes_Print {
+    display: none !important;
+  }
+}
+
+/* ========================================================================== */
+/* 🖨️ FIELD NOTEBOOK PRINT MODE                                               */
+/* ========================================================================== */
+@media print {
+  
+  /* 1. Perfect Pagination Setup */
+  @page {
+    size: 3.5in 5.5in; 
+    margin: 0.15in; /* Maximizes the usable space on the tiny page */
+  }
+
+  /* 2. Hide Desktop UI */
+  .App_Desktop_Wrapper, 
+  .no-print, 
+  nav, 
+  header, 
+  button {
+    display: none !important;
+  }
+
+  /* 3. Base Print Styles */
+  body {
+    background: white !important;
+    color: black !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .FieldNotes_Print {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 4. PREMIUM HEADER (Black Box, White Text) */
+  .FieldNotes_Header {
+    background-color: black !important;
+    color: white !important;
+    text-align: center;
+    font-size: 11pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 4pt 0;
+    margin-bottom: 6pt;
+  }
+
+  /* 5. UNIVERSAL TABLE STYLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Forces text to wrap, keeps columns strict */
+    font-size: 7pt;      /* Tiny, crisp font for pocket reading */
+    margin-bottom: 8pt;
+    break-inside: auto;  /* Allows the table to flow to page 2 naturally */
+  }
+
+  th, td {
+    border: 1px solid black !important;
+    padding: 3pt 4pt; /* Tighter padding saves vertical space */
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: black !important;
+  }
+
+  /* 6. HEADER & LABEL SHADING */
+  th, .Meta_Label {
+    background-color: #e5e5e5 !important;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  /* 7. PERFECT PAGE BREAKS */
+  tr {
+    /* Tells the printer: NEVER cut a row in half across two pages! */
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 8. COLUMN SIZING */
+  .Meta_Label { width: 22%; }
+  .Meta_Value { width: 28%; } 
+
+  .Col_Time { width: 22%; font-weight: bold; }
+  .Col_Name { width: 43%; font-weight: normal; }
+  .Col_Note { width: 35%; }
+
+  /* 9. TINY DETAILS */
+  .GPS_Text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 6.5pt; /* Slightly smaller to offset it from the name */
+    color: #444 !important;
+    display: block;
+    margin-top: 3pt;
+  }
+
+  .Stay_Text {
+    font-size: 6.5pt;
+    font-weight: normal;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 1px dashed #999 !important;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
