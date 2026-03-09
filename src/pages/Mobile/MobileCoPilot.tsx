@@ -61,13 +61,22 @@ export const MobileCoPilot = () => {
   const markReached = async () => {
     if (!activeStop) return;
 
+    // Get the current time in HH:mm format
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const updates = { is_completed: true, actual_arrival: now };
     
-    // 1. Mark the actual destination as reached
+    // 1. Get all the IDs we are about to complete (The active stop + any waypoints/origin before it)
+    const idsToUpdate = [activeStop.id, ...passedStops.map(s => s.id)];
+
+    // 2. INSTANT UI UPDATE: Feed the reality back into the Time Ripple Engine
+    setTempSegments(prev => prev.map(stop => 
+      idsToUpdate.includes(stop.id) ? { ...stop, ...updates } : stop
+    ));
+    
+    // 3. Background DB Update: Mark the actual destination as reached
     await updateStop(activeStop.id, updates);
 
-    // 2. Auto-complete the Origin AND any Waypoints we passed to get here!
+    // 4. Background DB Update: Auto-complete the Origin and Waypoints
     for (const stop of passedStops) {
       await updateStop(stop.id, updates);
     }
