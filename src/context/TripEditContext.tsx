@@ -68,7 +68,7 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [setLoading, setTripDetails, setTempId, setTempTitle, setTempSummary, setTempNote, setTempSegments, setTempStartDate, setTempStartTime, setTempStatus, setTempRating]); 
 
-  const handleAutoSave = async () => {
+const handleAutoSave = async () => {
     setTitleEdit(false);
     setSummaryEdit(false);
     setNoteEdit(false);
@@ -94,8 +94,9 @@ export const TripEditProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           title: tempTitle,
           trip_summary: tempSummary,
           trip_notes: tempNote,
-          start_date: tempStartDate,
-          start_time: tempStartTime,
+          // 👇 THE FIX: Force empty strings to be null so PostgreSQL accepts them
+          start_date: tempStartDate === "" ? null : tempStartDate,
+          start_time: tempStartTime === "" ? null : tempStartTime,
           status: tempStatus,
           trip_rating: tempRating,
           total_budget: totalBudget,
