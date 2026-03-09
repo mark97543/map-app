@@ -38,23 +38,21 @@ export const MobileCoPilot = () => {
   const handleNavigate = () => {
     if (!activeStop) return;
 
-    // 1. The Destination
+    // 1. The Destination (The "Real" Stop)
     const destination = `${activeStop.lat},${activeStop.lng}`;
     
-    // 2. The Waypoints (Shaping Points)
-    // We join them with a literal pipe '|' first
-    const waypointsStr = mapWaypoints
-      .map(wp => `via:${wp.lat},${wp.lng}`)
-      .join('|');
-
-    // 3. THE BULLETPROOF URL CONSTRUCTION
-    // We use the 'dir' action which is the most reliable for multi-stop
-    // We manually append the waypoints to avoid double-encoding the 'via:' prefix
+    // 2. The Universal Google Maps Directions URL
     let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
-
+    
+    // 3. The "Shaping Point" Waypoints Logic
     if (mapWaypoints.length > 0) {
-      // Use a template literal to add the waypoints. 
-      // Note: We encode the waypoints string to handle the pipes safely
+      // ✅ FIX: Prefix each coordinate with 'via:'
+      // This turns them into shaping points (no stopping required)
+      const waypointsStr = mapWaypoints
+        .map(wp => `via:${wp.lat},${wp.lng}`)
+        .join('|');
+        
+      // We encode the whole string to ensure the 'via:' and ':' don't get lost
       url += `&waypoints=${encodeURIComponent(waypointsStr)}`;
     }
     
